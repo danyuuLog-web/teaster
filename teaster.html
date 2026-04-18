@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danzy & Miyu - Personal Gallery</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f1014">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            /* Tema Gelap (Default) */
+            --bg-color: #0f1014; 
+            --card-bg: #1a1c23;
+            --accent: #ff529a; 
+            --accent-glow: rgba(255, 82, 154, 0.3);
+            --andri-color: #4e8cff;
+            --capsule-color: #f39c12;
+            --text-main: #ffffff; 
+            --text-dim: #9aa0a6;
+            --glass-bg: rgba(26, 28, 35, 0.7);
+            --border-light: rgba(255, 255, 255, 0.05);
+            --input-bg: rgba(0,0,0,0.2);
+            /* Warna Chat WA */
+            --wa-bg: #0b141a;
+            --wa-me: #005c4b;
+            --wa-them: #202c33;
+        }
+
+        /* Tema Terang */
+        body.light-mode {
+            --bg-color: #f0f2f5; 
+            --card-bg: #ffffff;
+            --text-main: #1a1c23; 
+            --text-dim: #666666;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --border-light: rgba(0, 0, 0, 0.08);
+            --input-bg: rgba(0, 0, 0, 0.04);
+            /* Warna Chat WA Terang */
+            --wa-bg: #efeae2;
+            --wa-me: #d9fdd3;
+            --wa-them: #ffffff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color); color: var(--text-main); 
+            overflow-x: hidden; -webkit-font-smoothing: antialiased;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* Anti-Curang Khusus Tamu */
+        body.guest-active {
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+        body.blur-mode { filter: blur(15px); pointer-events: none; }
+
+        /* --- AUTH SCREEN --- */
+        #auth-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000; background: var(--bg-color);
+            transition: background-color 0.5s ease;
+        }
+        .auth-box {
+            background: var(--card-bg); padding: 40px 30px; border-radius: 24px; text-align: center;
+            width: 85%; max-width: 350px; border: 1px solid var(--border-light); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1), 0 0 20px var(--accent-glow);
+            position: relative; transition: all 0.5s ease;
+        }
+        .auth-box h2 { font-weight: 600; margin-bottom: 5px; color: var(--text-main); }
+        .auth-box h2 span { color: var(--accent); }
+        .auth-input {
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; 
+            border: 1px solid var(--border-light); background: var(--input-bg); color: var(--text-main); 
+            outline: none; font-family: 'Poppins', sans-serif; transition: 0.3s;
+        }
+        .auth-input:focus { border-color: var(--accent); }
+        .btn-auth { 
+            width:100%; padding:15px; border-radius:12px; border:none; margin-top: 15px;
+            background: linear-gradient(135deg, var(--accent), #ff7aae); 
+            color:white; font-weight:600; cursor:pointer; font-size: 15px; 
+            font-family: 'Poppins', sans-serif; transition: 0.3s; box-shadow: 0 5px 15px var(--accent-glow);
+        }
+        .auth-switch { font-size: 13px; color: var(--text-dim); margin-top: 20px; cursor: pointer; }
+        .auth-switch span { color: var(--accent); font-weight: 600; }
+        .guest-btn { margin-top: 15px; padding: 10px; font-size: 13px; color: var(--text-dim); border: 1px solid var(--border-light); border-radius: 12px; cursor: pointer; transition: 0.3s; }
+        .guest-btn:hover { background: var(--input-bg); color: var(--text-main); }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-light);
+            transition: all 0.5s ease;
+        }
+        .logo { font-weight: 600; font-size: 16px; color: var(--accent); display: flex; align-items: center; gap: 8px; letter-spacing: 0.5px;}
+        .logout-btn { background: rgba(255,71,87,0.1); color: #ff4757; border: 1px solid rgba(255,71,87,0.3); padding: 6px 12px; border-radius: 50px; font-size: 12px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 500;}
+
+        .container { padding: 20px; max-width: 1200px; margin: 0 auto; padding-bottom: 120px; }
+
+        /* --- WIDGETS --- */
+        .dashboard-card {
+            background: var(--card-bg); 
+            border-radius: 20px; border: 1px solid var(--border-light);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 20px; margin-bottom: 25px;
+            position: relative; transition: all 0.5s ease;
+        }
+        .corner-heart {
+            position: absolute; color: var(--accent); font-size: 16px; opacity: 0.8; 
+            filter: drop-shadow(0 0 5px var(--accent-glow)); pointer-events: none; display: none;
+        }
+        .daily-quote { font-style: italic; font-size: 13px; color: var(--accent); text-align: center; margin-bottom: 10px; font-weight:500; transition: 0.5s ease; display: none; line-height: 1.5;}
+        #love-timer { font-size: 18px; font-weight: 700; color: var(--accent); margin-top: 5px; text-align: center; letter-spacing: 1px;}
+        
+        .milestone-list { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; text-align: left; border-top: 1px solid var(--border-light); padding-top: 15px;}
+        .milestone-item { font-size: 13px; color: var(--text-dim); display: flex; justify-content: space-between; align-items: center; background: var(--input-bg); padding: 10px 15px; border-radius: 10px;}
+        .milestone-item span:last-child { color: var(--text-main); font-weight: 500; font-size: 12px; background: rgba(255,82,154,0.15); padding: 4px 10px; border-radius: 20px; color: var(--accent);}
+
+        .mood-board { display: flex; justify-content: space-between; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border-light);}
+        .mood-item { text-align: center; flex: 1; padding: 10px; border-radius: 12px; transition: 0.3s; cursor: pointer; }
+        .mood-item:hover { background: rgba(255,82,154,0.05); }
+        .mood-name { font-size: 11px; color: var(--text-dim); font-weight: 600; letter-spacing: 1px; text-transform: uppercase;}
+        .mood-emoji { font-size: 24px; margin-top: 5px; transition: 0.3s; background: var(--input-bg); padding: 8px; border-radius: 12px; display: inline-block;}
+        .mood-item:hover .mood-emoji { transform: scale(1.1); background: rgba(255,82,154,0.1); }
+        .mood-text { font-size: 12px; font-weight: 500; margin-top: 5px; color: var(--text-main); }
+        .status-text { font-size: 10px; color: var(--accent); font-style: italic; margin-top: 2px; }
+
+        /* --- MODERN TABS --- */
+        .tabs { 
+            display: flex; gap: 5px; margin-bottom: 25px; background: var(--input-bg); 
+            padding: 6px; border-radius: 50px; border: 1px solid var(--border-light); overflow-x: auto;
+        }
+        .tab-btn { 
+            flex: 1; min-width: 90px; padding: 12px 10px; border-radius: 40px; border: none; 
+            background: transparent; color: var(--text-dim); font-family: 'Poppins'; 
+            font-weight: 500; font-size: 13px; cursor: pointer; transition: all 0.3s ease; white-space: nowrap;
+        }
+        .tab-btn.active { background: var(--card-bg); color: var(--accent); font-weight: 600; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+        /* --- FOLDERS --- */
+        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 18px; }
+        .folder-card { 
+            background: var(--card-bg); border-radius: 16px; overflow: hidden; cursor: pointer; 
+            border: 1px solid var(--border-light); transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .folder-card:active { transform: scale(0.97); }
+        .folder-card img { width: 100%; height: 200px; object-fit: cover; }
+        .folder-card .info { padding: 15px 12px; font-size: 13px; font-weight: 500; text-align: center; }
+
+        /* --- WHATSAPP STYLE CHAT --- */
+        .wa-container {
+            background-color: var(--wa-bg);
+            background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+            background-size: cover; background-position: center;
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        #notes-container {
+            height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(0,0,0,0.4); /* Gelap biar wallpaper kontras */
+        }
+        body.light-mode #notes-container { background: rgba(255,255,255,0.4); }
+
+        .wa-wrapper { display: flex; width: 100%; }
+        .wa-wrapper.wa-me { justify-content: flex-end; }
+        .wa-wrapper.wa-them { justify-content: flex-start; }
+        
+        .wa-bubble {
+            max-width: 80%; padding: 8px 12px; border-radius: 12px; position: relative;
+            color: var(--text-main); word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+        body.light-mode .wa-bubble { color: #1a1c23; }
+        .wa-bubble.wa-me { background-color: var(--wa-me); border-top-right-radius: 4px; }
+        .wa-bubble.wa-them { background-color: var(--wa-them); border-top-left-radius: 4px; }
+
+        .wa-sender { font-size: 11px; font-weight: 700; margin-bottom: 2px; }
+        .wa-text { font-size: 13.5px; line-height: 1.4; white-space: pre-wrap; margin-bottom: 4px; }
+        .wa-meta { display: flex; justify-content: flex-end; align-items: center; gap: 6px; font-size: 10px; color: var(--text-dim); }
+        body.light-mode .wa-meta { color: #888; }
+        .wa-delete { cursor: pointer; color: #ff4757; transition: 0.3s; opacity: 0.6; }
+        .wa-delete:hover { opacity: 1; }
+
+        /* Input Chat WA Inline */
+        .wa-input-area {
+            display: flex; gap: 10px; padding: 12px 15px;
+            background: var(--card-bg); border-top: 1px solid var(--border-light);
+            align-items: center; position: relative;
+        }
+        .wa-action-btn { background:none; border:none; color:var(--text-dim); font-size:20px; cursor:pointer; padding:5px; transition:0.3s; }
+        .wa-action-btn:hover { color:var(--accent); }
+        #emoji-picker { display:none; position:absolute; bottom:60px; left:15px; background:var(--card-bg); border:1px solid var(--border-light); border-radius:16px; padding:10px; width:260px; flex-wrap:wrap; gap:5px; box-shadow:0 10px 30px rgba(0,0,0,0.5); z-index:100; justify-content: space-between;}
+        .emoji-btn { background:none; border:none; font-size:22px; cursor:pointer; padding:5px; transition:transform 0.2s; }
+        .emoji-btn:active { transform:scale(1.3); }
+
+        .wa-input {
+            flex: 1; padding: 12px 15px; border-radius: 20px; border: 1px solid var(--border-light);
+            background: var(--input-bg); color: var(--text-main); outline: none;
+            font-family: 'Poppins', sans-serif; font-size: 13px; transition: 0.3s;
+        }
+        .wa-input:focus { border-color: var(--accent); }
+        .wa-send-btn {
+            background: linear-gradient(135deg, var(--accent), #ff7aae);
+            color: white; border: none; width: 45px; height: 45px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; cursor: pointer;
+            box-shadow: 0 5px 15px var(--accent-glow); transition: 0.3s; font-size: 16px;
+        }
+        .wa-send-btn:active { transform: scale(0.9); }
+
+        /* --- LIST CARD --- */
+        .list-card { 
+            background: var(--card-bg); padding: 18px; border-radius: 16px; margin-bottom: 12px; 
+            display: flex; align-items: flex-start; gap: 15px; border: 1px solid var(--border-light); position: relative;
+        }
+        .list-text { flex: 1; font-size: 14px; line-height: 1.6; }
+
+        .btn-kangen { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); color: #ff4757; border: none; padding: 15px; border-radius: 16px; width: 100%; font-weight: 600; cursor: pointer; font-family: 'Poppins'; margin-bottom: 15px; font-size: 14px; box-shadow: 0 5px 15px rgba(255,154,158,0.3); transition: 0.3s;}
+        .btn-kangen:active { transform: scale(0.98); }
+        
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .btn-outline-dashed { 
+            padding:12px 10px; border-radius:14px; border:2px dashed rgba(255,82,154,0.5); 
+            background: rgba(255,82,154,0.05); color:var(--accent); cursor:pointer; 
+            font-family:'Poppins'; font-weight: 600; font-size: 11px; text-align: center; 
+            display: flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; transition: 0.3s;
+        }
+        .btn-outline-dashed:active { transform: scale(0.95); }
+        .btn-outline-dashed i { font-size: 18px; margin-bottom: 2px;}
+
+        /* --- DEEP TALK CHAT BUBBLES --- */
+        .dt-chat-box {
+            background: var(--input-bg); border: 1px solid var(--border-light); border-radius: 12px;
+            padding: 10px; height: 280px; overflow-y: auto; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;
+        }
+        .dt-bubble { padding: 8px 12px; border-radius: 12px; font-size: 13px; max-width: 85%; word-wrap: break-word; line-height: 1.4; }
+        .dt-bubble.me { background: rgba(78, 140, 255, 0.15); border: 1px solid var(--andri-color); align-self: flex-end; border-bottom-right-radius: 4px; color: var(--text-main); }
+        .dt-bubble.them { background: rgba(255, 82, 154, 0.15); border: 1px solid var(--accent); align-self: flex-start; border-bottom-left-radius: 4px; color: var(--text-main); }
+        .dt-sender { font-size: 9px; font-weight: 600; margin-bottom: 2px; opacity: 0.7; }
+        .dt-wrapper.me { display: flex; flex-direction: column; align-items: flex-end; }
+        .dt-wrapper.them { display: flex; flex-direction: column; align-items: flex-start; }
+
+        /* --- BUCKET LIST --- */
+        .check-btn { color: #2ed573; background: none; border: none; font-size: 22px; cursor: pointer; }
+        .list-card.done { opacity: 0.5; border-left: 4px solid #2ed573 !important; }
+        .list-card:not(.done) { border-left: 4px solid var(--accent); }
+
+        /* --- FLOATING EXPANDABLE MENU (FAB) --- */
+        .fab-container { position: fixed; bottom: 25px; right: 25px; display: flex; flex-direction: column-reverse; align-items: center; gap: 15px; z-index: 200; }
+        .fab-main { width: 55px; height: 55px; border-radius: 50%; border: none; color: white; font-size: 22px; cursor: pointer; background: linear-gradient(135deg, var(--accent), #ff7aae); box-shadow: 0 5px 20px rgba(255, 82, 154, 0.4); display: flex; justify-content: center; align-items: center; transition: 0.3s; z-index: 201; }
+        .fab-main i { transition: 0.3s; }
+        .fab-main.active i { transform: rotate(45deg); } 
+        
+        .fab-menu { display: flex; flex-direction: column; gap: 15px; position: absolute; bottom: 70px; right: 0; opacity: 0; pointer-events: none; transform: translateY(20px); transition: all 0.3s ease; }
+        .fab-menu.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+        
+        .btn-float { width: 45px; height: 45px; border-radius: 50%; border: none; color: white; font-size: 18px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; transition: 0.3s;}
+        .btn-float:active { transform: scale(0.9); }
+        .btn-dice { background: linear-gradient(135deg, #4e8cff, #2a5298); }
+        .btn-add { background: var(--card-bg); color: var(--accent); border: 1px solid var(--border-light); }
+        .btn-music { background: var(--card-bg); color: var(--text-dim); border: 1px solid var(--border-light); }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);}
+        .modal-content { background: var(--card-bg); padding: 30px; border-radius: 24px; width: 85%; max-width: 380px; border: 1px solid var(--border-light); box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;}
+        .modal-content input, .modal-content textarea, .modal-content select { width: 100%; padding: 15px; margin: 8px 0; background: var(--input-bg); border: 1px solid var(--border-light); color: var(--text-main); border-radius: 12px; font-family: 'Poppins'; box-sizing: border-box; outline:none; transition: 0.3s;}
+        .modal-content input:focus, .modal-content textarea:focus { border-color: var(--accent); }
+        .btn-cancel { background: transparent; border: 1px solid var(--border-light); color: var(--text-dim); width: 100%; padding: 15px; border-radius: 12px; margin-top: 10px; cursor: pointer; font-family: 'Poppins'; transition: 0.3s;}
+        .btn-cancel:hover { background: var(--input-bg); color: var(--text-main); }
+        
+        #hug-animation { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 71, 87, 0.4); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .giant-heart { font-size: 150px; color: #ff4757; animation: pulse 1s infinite; filter: drop-shadow(0 0 20px rgba(255,71,87,0.8)); }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
+        #custom-alert-icon, #custom-confirm-icon { font-size: 45px; margin-bottom: 15px; }
+        
+        #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,16,20,0.95); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(15px); }
+        #lightbox img { max-width: 90%; max-height: 65vh; border-radius: 16px; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .lb-actions { margin-top: 20px; display: flex; gap: 15px; align-items: center; background: var(--card-bg); padding: 10px 20px; border-radius: 50px; }
+        .btn-heart { background: none; border: none; font-size: 22px; color: var(--text-dim); cursor: pointer; }
+        .btn-heart.active { color: #ff4757; filter: drop-shadow(0 0 8px rgba(255,71,87,0.5));}
+        .lightbox-controls { margin-top: 15px; display: flex; gap: 10px; }
+        .btn-lb { padding: 12px 20px; border-radius: 50px; border: none; font-weight: 600; cursor: pointer; color: white; font-size:13px; transition: 0.3s;}
+        .btn-lb.close { background: rgba(255,255,255,0.1); color: var(--text-main); }
+        .btn-lb.save { background: var(--accent); color: white; }
+        .btn-lb.del { background: transparent; color: #ff4757; border: 1px solid rgba(255,71,87,0.3); }
+
+        .heart-bg { position: fixed; top: -10vh; animation: fall linear infinite; z-index: 1; pointer-events: none; opacity: 0.6;}
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" loop></audio>
+
+    <div id="hug-animation">
+        <i class="fa fa-heart giant-heart"></i>
+    </div>
+
+    <div id="custom-alert" class="modal" style="z-index: 9999;">
+        <div class="modal-content" style="text-align: center; max-width: 320px; padding: 35px 25px;">
+            <div id="custom-alert-icon"></div>
+            <h3 id="custom-alert-title" style="margin: 0 0 10px 0; font-size: 20px;">Title</h3>
+            <p id="custom-alert-msg" style="font-size: 13px; color: var(--text-dim); margin-bottom: 25px; line-height: 1.5;"></p>
+            <button id="custom-alert-btn" class="btn-auth" style="margin: 0; padding: 12px;" onclick="closeCustomAlert()">O K E</button>
+        </div>
+    </div>
+
+    <div id="custom-confirm" class="modal" style="z-index: 9999;">
+        <div class="modal-content" style="text-align: center; max-width: 320px; padding: 35px 25px;">
+            <div id="custom-confirm-icon" style="color: #ff4757; text-shadow: 0 0 15px rgba(255,71,87,0.5);"><i class="fa fa-triangle-exclamation"></i></div>
+            <h3 id="custom-confirm-title" style="margin: 0 0 10px 0; font-size: 20px;">Title</h3>
+            <p id="custom-confirm-msg" style="font-size: 13px; color: var(--text-dim); margin-bottom: 25px; line-height: 1.5;"></p>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-cancel" style="margin: 0; padding: 12px; flex: 1;" onclick="closeCustomConfirm()">Batal</button>
+                <button id="custom-confirm-yes" class="btn-auth" style="margin: 0; padding: 12px; flex: 1; background: linear-gradient(135deg, #ff4757, #ff6b81); box-shadow: 0 5px 15px rgba(255,71,87,0.3);">Yakin</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="secret-door-modal" class="modal" style="z-index: 9999;">
+        <div class="modal-content" style="text-align: center; max-width: 320px; padding: 35px 25px;">
+            <i class="fa fa-user-secret" style="font-size: 45px; color: #f39c12; margin-bottom: 15px; text-shadow: 0 0 15px rgba(243,156,18,0.5);"></i>
+            <h3 style="margin: 0 0 10px 0; font-size: 20px; color: #f39c12;">Classified Area</h3>
+            <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 20px;">Restricted access. Authentication required.</p>
+            <input type="password" id="secret-code-input" placeholder="••••••••••" style="text-align: center; letter-spacing: 5px; font-size: 18px; border-color:#f39c12; outline:none;">
+            <button class="btn-auth" style="margin-top: 15px; background: linear-gradient(135deg, #f39c12, #e67e22); box-shadow: 0 5px 15px rgba(243,156,18,0.3);" onclick="verifySecretCode()">BYPASS</button>
+            <button class="btn-cancel" onclick="closeModal('secret-door-modal')">CANCEL</button>
+        </div>
+    </div>
+
+    <div id="auth-screen">
+        <div class="auth-box" id="login-box">
+            <h2>Sign <span>In</span></h2>
+            <p style="color:var(--text-dim); font-size:13px; margin-top:0;">Welcome back to our archive!</p>
+            <input type="text" id="login-username" class="auth-input" placeholder="Username">
+            <input type="password" id="login-password" class="auth-input" placeholder="Password">
+            <button class="btn-auth" onclick="doLogin()">MASUK</button>
+            <div class="auth-switch" onclick="toggleAuth()">Belum punya akun? <span>Daftar di sini</span></div>
+            <div class="guest-btn" onclick="masukTamu()">Cuma mau liat-liat aja? 👀<br><b>Masuk sebagai Tamu</b></div>
+        </div>
+
+        <div class="auth-box" id="register-box" style="display:none;">
+            <h2>Sign <span>Up</span></h2>
+            <p style="color:var(--text-dim); font-size:13px; margin-top:0;">Buat akses khusus kamu.</p>
+            <input type="text" id="reg-username" class="auth-input" placeholder="Bikin Username">
+            <input type="password" id="reg-password" class="auth-input" placeholder="Bikin Password">
+            <select id="reg-role" class="auth-input">
+                <option value="Andri">Aku adalah: Andri 👦🏻</option>
+                <option value="Afifah">Aku adalah: Afifah 👩🏻</option>
+            </select>
+            <input type="password" id="reg-secret" class="auth-input" placeholder="Ketik Kode Rahasia Pasangan" style="border-color: var(--accent);">
+            <button class="btn-auth" onclick="doRegister()">DAFTAR & MASUK</button>
+            <div class="auth-switch" onclick="toggleAuth()">Udah punya akun? <span>Masuk di sini</span></div>
+        </div>
+    </div>
+
+    <div id="main-ui" style="display: none;">
+        <nav class="navbar">
+            <div class="logo"><i class="fa-solid fa-heart" style="font-size:16px;"></i> <span id="nav-greeting">Halo!</span></div>
+            <button class="logout-btn" onclick="doLogout()"><i class="fa fa-sign-out-alt"></i> Keluar</button>
+        </nav>
+
+        <div class="container">
+            <div class="dashboard-card" id="dashboard-widget" style="padding-bottom:25px;">
+                <i class="corner-heart fa fa-heart" style="top: 15px; left: 15px;"></i>
+                <i class="corner-heart fa fa-heart" style="top: 15px; right: 15px;"></i>
+                <i class="corner-heart fa fa-heart" style="bottom: 15px; left: 15px;"></i>
+                <i class="corner-heart fa fa-heart" style="bottom: 15px; right: 15px;"></i>
+
+                <div class="daily-quote" id="daily-quote-text" style="margin-top:5px; margin-bottom:5px; padding-bottom:10px; display:none;"></div>
+                <div class="auth-admin-only" style="text-align: center; margin-top: -5px; margin-bottom: 20px;">
+                    <button onclick="openModal('quote-modal')" style="background:rgba(255,82,154,0.1); border:1px solid rgba(255,82,154,0.2); color:var(--accent); font-size:10px; padding: 4px 12px; border-radius: 50px; cursor:pointer; font-weight: 500; font-family: 'Poppins'; transition:0.3s;"><i class="fa fa-pen"></i> Tulis Pesan Random Buat Ayang</button>
+                </div>
+
+                <p style="margin:0; font-size: 11px; color: var(--text-dim); text-align:center; text-transform: uppercase; letter-spacing: 2px; border-top: 1px solid var(--border-light); padding-top:15px;">Waktu Kebersamaan</p>
+                <div id="love-timer">Menghitung...</div>
+                
+                <div class="milestone-list" id="milestone-container"></div>
+                <div style="text-align: center; margin-top: 15px;" id="milestone-btn-container" class="auth-admin-only">
+                    <button onclick="openModal('milestone-modal')" style="background:rgba(255,82,154,0.1); border:1px solid rgba(255,82,154,0.2); color:var(--accent); font-size:11px; padding: 6px 15px; border-radius: 50px; cursor:pointer; font-weight: 500; font-family: 'Poppins';">+ KELOLA HARI PENTING</button>
+                </div>
+
+                <div class="mood-board">
+                    <div class="mood-item" onclick="openMoodModal('Andri')">
+                        <div class="mood-name">Andri 👦🏻</div>
+                        <div class="mood-emoji" id="mood-emoji-Andri">❓</div>
+                        <div class="mood-text" id="mood-text-Andri">Belum update</div>
+                        <div class="status-text" id="status-text-Andri"></div>
+                    </div>
+                    <div class="mood-item" onclick="openMoodModal('Afifah')" style="border-left: 1px solid var(--border-light);">
+                        <div class="mood-name">Afifah 👩🏻</div>
+                        <div class="mood-emoji" id="mood-emoji-Afifah">❓</div>
+                        <div class="mood-text" id="mood-text-Afifah">Belum update</div>
+                        <div class="status-text" id="status-text-Afifah"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card auth-admin-only" id="next-date-widget" style="background: linear-gradient(145deg, #15161c, #1e2029); border-color: rgba(46,213,115,0.3);">
+                <div style="font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:2px; text-align:center;"><i class="fa fa-calendar-check" style="color:#2ed573;"></i> Jadwal Ngedate Berikutnya</div>
+                <div id="next-date-title" style="font-size:16px; font-weight:600; color:white; text-align:center; margin-top:5px;">Belum Ada Jadwal</div>
+                <div id="next-date-countdown" style="font-size:14px; font-weight:700; color:#2ed573; text-align:center; margin-top:5px;">Yuk atur waktu berdua!</div>
+                
+                <div style="text-align: center; margin-top: 15px; display:flex; justify-content:center; gap:10px;" id="btn-set-date-container">
+                    <button onclick="openModal('next-date-modal')" style="background:rgba(46,213,115,0.1); border:1px solid rgba(46,213,115,0.3); color:#2ed573; font-size:11px; padding: 6px 15px; border-radius: 50px; cursor:pointer; font-weight: 500; font-family: 'Poppins';">Atur Jadwal</button>
+                    <button id="btn-delete-date" onclick="deleteNextDate()" style="display:none; background:rgba(255,71,87,0.1); border:1px solid rgba(255,71,87,0.3); color:#ff4757; font-size:11px; padding: 6px 15px; border-radius: 50px; cursor:pointer; font-weight: 500; font-family: 'Poppins';"><i class="fa fa-trash"></i> Hapus</button>
+                </div>
+            </div>
+
+            <div class="tabs" id="main-tabs">
+                <button class="tab-btn active" id="tab-gallery" onclick="switchView('gallery')">Galeri</button>
+                <button class="tab-btn auth-admin-only" id="tab-notes" onclick="switchView('notes')">Chat</button>
+                <button class="tab-btn auth-admin-only" id="tab-bucket" onclick="switchView('bucket')">Impian</button>
+                <button class="tab-btn auth-admin-only" id="tab-game" onclick="switchView('game')">Game 🎮</button>
+            </div>
+
+            <div id="home-view">
+                <div class="folder-grid" id="folder-container"></div>
+            </div>
+
+            <div id="notes-view" style="display:none;">
+                <button class="btn-kangen" onclick="sendKangenPing()" id="btn-ping"><i class="fa fa-bell"></i> KIRIM PING KANGEN 🥺</button>
+                
+                <div class="action-grid auth-admin-only" id="action-buttons-chat">
+                    <button class="btn-outline-dashed" style="border-color:var(--capsule-color); color:var(--capsule-color); background:rgba(243,156,18,0.05);" onclick="openModal('capsule-modal')" id="btn-add-capsule"><i class="fa fa-lock"></i> KAPSUL WAKTU</button>
+                    <button class="btn-outline-dashed" style="border-color:#ff4757; color:#ff4757; background:rgba(255,71,87,0.05);" onclick="sendVirtualHug()"><i class="fa fa-hands-holding-circle"></i> PELUK VIRTUAL</button>
+                    <button class="btn-outline-dashed" style="border-color:#2ed573; color:#2ed573; background:rgba(46,213,115,0.05); grid-column: span 2;" onclick="document.getElementById('wa-wallpaper-input').click()"><i class="fa fa-image"></i> GANTI WALLPAPER CHAT WA</button>
+                    <input type="file" id="wa-wallpaper-input" accept="image/*" style="display:none;" onchange="uploadWaWallpaper(event)">
+                </div>
+
+                <div id="capsules-container" style="margin-bottom: 15px;"></div>
+                
+                <div class="wa-container">
+                    <div id="notes-container"></div>
+                    <div class="wa-input-area auth-admin-only">
+                        <button class="wa-action-btn" onclick="toggleEmojiPicker()"><i class="fa-regular fa-face-smile"></i></button>
+                        <button class="wa-action-btn" onclick="document.getElementById('wa-photo-input').click()"><i class="fa fa-paperclip"></i></button>
+                        <input type="file" id="wa-photo-input" accept="image/*" style="display:none;" onchange="sendWaPhoto(event)">
+                        
+                        <div id="emoji-picker"></div>
+
+                        <input type="text" id="wa-chat-input" class="wa-input" placeholder="Ketik pesan..." onkeypress="handleWaEnter(event)">
+                        <button class="wa-send-btn" onclick="sendWaChat()"><i class="fa fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="bucket-view" style="display:none;">
+                <button class="btn-outline-dashed auth-admin-only" style="width:100%; flex-direction:row;" onclick="openModal('bucket-modal')" id="btn-add-bucket"><i class="fa fa-plus"></i> TAMBAH IMPIAN</button>
+                <div id="bucket-container"></div>
+            </div>
+
+            <div id="game-view" style="display:none;">
+                <div id="game-menu">
+                    <div class="folder-grid">
+                        <div class="folder-card" onclick="openSubGame('tebak')">
+                            <div style="height:150px; display:flex; align-items:center; justify-content:center; background:rgba(46, 213, 115, 0.1); color:#2ed573; font-size:50px;"><i class="fa fa-gift"></i></div>
+                            <div class="info">Tebakan Berhadiah</div>
+                        </div>
+                        <div class="folder-card" onclick="openSubGame('deeptalk')">
+                            <div style="height:150px; display:flex; align-items:center; justify-content:center; background:rgba(78, 140, 255, 0.1); color:var(--andri-color); font-size:50px;"><i class="fa fa-comments"></i></div>
+                            <div class="info">Game Deep Talk</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sub-tebak" style="display:none;">
+                    <button class="btn-cancel" style="width:auto; padding:8px 15px; border-radius:50px; margin-bottom:15px; font-size:12px; display:inline-flex; align-items:center; gap:8px;" onclick="closeSubGame()"><i class="fa fa-arrow-left"></i> KEMBALI</button>
+                    <button class="btn-outline-dashed auth-admin-only" style="width:100%; flex-direction:row;" onclick="openModal('create-game-modal')" id="btn-add-game" style="background: rgba(46, 213, 115, 0.05); border-color: #2ed573; color: #2ed573;"><i class="fa fa-plus"></i> BIKIN TEBAKAN BARU 🎮</button>
+                    <div id="games-container"></div>
+                </div>
+
+                <div id="sub-deeptalk" style="display:none;">
+                    <button class="btn-cancel" style="width:auto; padding:8px 15px; border-radius:50px; margin-bottom:15px; font-size:12px; display:inline-flex; align-items:center; gap:8px;" onclick="closeSubGame()"><i class="fa fa-arrow-left"></i> KEMBALI</button>
+                    
+                    <div class="list-card" style="border-left: 4px solid var(--andri-color); background: var(--card-bg); display:block; padding: 20px 15px;">
+                        <div style="text-align:center;">
+                            <i class="fa fa-quote-left" style="font-size:24px; color:var(--andri-color); opacity:0.5; margin-bottom:10px;"></i>
+                            <div id="dt-question" style="font-size:16px; font-weight:600; line-height:1.5; margin-bottom:20px;">Memuat pertanyaan...</div>
+                        </div>
+                        
+                        <div class="dt-chat-box" id="dt-chat-container">
+                            <div style="text-align:center; font-size:12px; color:var(--text-dim); margin-top:50px;">Yuk mulai jawab pertanyaannya di sini! 👇</div>
+                        </div>
+
+                        <div style="display:flex; gap:10px;" class="auth-admin-only">
+                            <input type="text" id="dt-chat-input" class="auth-input" style="margin:0; flex:1;" placeholder="Tulis jawaban jujurmu...">
+                            <button class="btn-auth" style="margin:0; width:55px; padding:0; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #4e8cff, #2a5298); box-shadow: 0 5px 15px rgba(78,140,255,0.3);" onclick="sendDtChat()"><i class="fa fa-paper-plane"></i></button>
+                        </div>
+
+                        <div id="dt-action-area" style="margin-top:20px; text-align:center;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="album-view" style="display:none;">
+                <button class="btn-cancel" style="width:auto; padding:8px 15px; border-radius:50px; margin-bottom:15px; font-size:12px; display:inline-flex; align-items:center; gap:8px;" onclick="switchView('gallery')"><i class="fa fa-arrow-left"></i> KEMBALI</button>
+                <div style="margin-bottom:20px;">
+                    <h2 id="active-folder-title" style="margin:0; font-size:22px;"></h2>
+                    <p id="folder-note" style="margin:5px 0 10px; font-size:13px; color:var(--text-dim);"></p>
+                    <button style="background:rgba(255,71,87,0.1); color:#ff4757; border:none; padding:8px 16px; border-radius:50px; font-size:12px; font-weight:500; cursor:pointer;" id="btn-delete-folder" class="auth-admin-only">Hapus Folder</button>
+                </div>
+                <div class="folder-grid" id="photo-container"></div>
+            </div>
+        </div>
+
+        <div class="fab-container auth-admin-only">
+            <button class="fab-main" onclick="toggleFab()" id="fab-main-btn"><i class="fa fa-plus"></i></button>
+            <div class="fab-menu" id="fab-menu">
+                <button class="btn-float btn-dice" onclick="showRandomMemory(); toggleFab()"><i class="fa fa-dice"></i></button>
+                <button class="btn-float btn-add" onclick="openModal('upload-modal'); toggleFab()"><i class="fa fa-images"></i></button>
+                <button class="btn-float btn-music" onclick="openModal('music-modal'); toggleFab()"><i class="fa fa-music" id="music-icon"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="music-modal" class="modal"><div class="modal-content" style="text-align:center;">
+        <h3 style="color:var(--accent);"><i class="fa fa-compact-disc"></i> Album Musik</h3>
+        <p style="font-size:12px; color:var(--text-dim); margin-top:0;">Pilih lagu kenangan buat nemenin buka galeri.</p>
+        
+        <div id="music-list-container" style="display:flex; flex-direction:column; gap:10px; margin-top:15px; margin-bottom:15px; max-height: 200px; overflow-y: auto;">
+            </div>
+
+        <div class="auth-admin-only" style="background:var(--input-bg); padding:15px; border-radius:12px; border:1px dashed var(--border-light); margin-bottom:15px;">
+            <p style="font-size:11px; font-weight:600; margin-top:0; color:var(--text-dim);">+ TAMBAH LAGU BARU</p>
+            <input type="text" id="new-music-title" class="auth-input" style="padding:10px; font-size:12px; margin:5px 0;" placeholder="Judul Lagu (Contoh: Surat Cinta)">
+            <input type="text" id="new-music-file" class="auth-input" style="padding:10px; font-size:12px; margin:5px 0;" placeholder="Nama File (Contoh: surat.mp3)">
+            <button class="btn-auth" style="padding:10px; font-size:12px; margin-top:5px;" onclick="saveMusic()">SIMPAN LAGU</button>
+            <div style="font-size:9px; color:var(--text-dim); margin-top:8px;">Pastikan file mp3 udah di-upload ke GitHub lu ya!</div>
+        </div>
+
+        <button class="btn-cancel" onclick="stopMusic(); toggleFab()" style="color:#ff4757; border-color:rgba(255,71,87,0.3); background:rgba(255,71,87,0.05); margin-top:0;"><i class="fa fa-stop"></i> Matikan Musik</button>
+        <button class="btn-cancel" onclick="closeModal('music-modal')">Tutup</button>
+    </div></div>
+
+    <div id="mood-modal" class="modal"><div class="modal-content" style="text-align:center;">
+        <h3>Update Kondisi Kamu</h3>
+        <select id="mood-selector" style="font-size: 16px; text-align:center;">
+            <option value="😄|Lagi Seneng">😄 Lagi Seneng</option>
+            <option value="🥺|Lagi Kangen">🥺 Lagi Kangen</option>
+            <option value="😫|Lagi Capek">😫 Lagi Capek</option>
+            <option value="🥰|Lagi Bucin">🥰 Lagi Bucin</option>
+            <option value="👿|Lagi Bete/PMS">👿 Lagi Bete/PMS</option>
+            <option value="😴|Ngantuk">😴 Ngantuk</option>
+            <option value="😒|Badmood">😒 Badmood</option>
+            <option value="🫠|Lemes">🫠 Lemes</option>
+            <option value="😵‍💫|Pusing">😵‍💫 Pusing</option>
+            <option value="🤯|Banyak Pikiran">🤯 Banyak Pikiran</option>
+            <option value="🫂|Lagi mau sama ayang">🫂 Lagi mau sama ayang</option>
+        </select>
+        <input type="text" id="mood-status" placeholder="Lagi ngapain sekarang? (Cth: Nugas, rebahan)" style="margin-top:10px; font-size:13px;">
+        <button class="btn-auth" onclick="saveMood()">UPDATE STATUS</button>
+        <button class="btn-cancel" onclick="closeModal('mood-modal')">Batal</button>
+    </div></div>
+    
+    <div id="quote-modal" class="modal"><div class="modal-content">
+        <h3 style="color:var(--accent);"><i class="fa fa-quote-left"></i> Pesan Buat Ayang</h3>
+        <p style="font-size:12px; color:var(--text-dim); margin-top:0;">Tulis kata-kata yang bakal muncul acak di layar utama pasanganmu.</p>
+        <textarea id="quote-input" rows="3" placeholder="Contoh: Semangat kuliahnya ya sayang..."></textarea>
+        <button class="btn-auth" onclick="saveCustomQuote()">SIMPAN KATA-KATA</button>
+        <div id="quote-manage-list" style="margin-top:15px; max-height:150px; overflow-y:auto; border-top: 1px solid var(--border-light); padding-top: 10px;"></div>
+        <button class="btn-cancel" onclick="closeModal('quote-modal')">Tutup</button>
+    </div></div>
+
+    <div id="upload-modal" class="modal"><div class="modal-content">
+        <h3>Upload Foto</h3>
+        <select id="upload-target"></select>
+        <input type="text" id="new-folder-name" placeholder="Nama Folder Baru">
+        <input type="file" id="file-input" accept="image/*" multiple>
+        <button id="btn-process-upload" class="btn-auth">UPLOAD FOTO</button>
+        <button class="btn-cancel" onclick="closeModal('upload-modal')">Batal</button>
+    </div></div>
+
+    <div id="capsule-modal" class="modal"><div class="modal-content">
+        <h3 style="color:var(--capsule-color);">Buat Kapsul Waktu ⏳</h3>
+        <p style="font-size:12px; color:var(--text-dim); margin-top:0;">Pesan ini baru bisa dibaca pada tanggal yang kamu tentukan.</p>
+        <textarea id="capsule-input" rows="4" placeholder="Tulis pesan rahasia..."></textarea>
+        <label style="font-size:12px; color:var(--text-dim); display:block; margin-top:10px; text-align:left;">Buka otomatis pada tanggal:</label>
+        <input type="date" id="capsule-date">
+        <button class="btn-auth" style="background:linear-gradient(135deg, #f39c12, #e67e22);" onclick="saveCapsule()">KUNCI PESAN</button>
+        <button class="btn-cancel" onclick="closeModal('capsule-modal')">Batal</button>
+    </div></div>
+
+    <div id="bucket-modal" class="modal"><div class="modal-content">
+        <h3>Impian Baru</h3>
+        <input type="text" id="bucket-input" placeholder="Nonton konser bareng...">
+        <button id="btn-save-bucket" class="btn-auth">TAMBAH</button>
+        <button class="btn-cancel" onclick="closeModal('bucket-modal')">Batal</button>
+    </div></div>
+
+    <div id="milestone-modal" class="modal"><div class="modal-content">
+        <h3>Kelola Tanggal</h3>
+        <input type="text" id="ms-title" placeholder="Nama Acara (e.g. Ultah Miyu)">
+        <input type="date" id="ms-date">
+        <button id="btn-save-ms" class="btn-auth" style="margin-top:10px;">SIMPAN TANGGAL</button>
+        <div id="ms-manage-list" style="margin-top:15px; max-height:150px; overflow-y:auto; border-top: 1px solid var(--border-light); padding-top: 10px;"></div>
+        <button class="btn-cancel" onclick="closeModal('milestone-modal')">Tutup</button>
+    </div></div>
+
+    <div id="next-date-modal" class="modal"><div class="modal-content">
+        <h3 style="color:#2ed573;">Jadwal Kencan 🍿</h3>
+        <p style="font-size:12px; color:var(--text-dim); margin-top:0;">Atur jadwal ngedate kita biar makin semangat nunggunya!</p>
+        <input type="text" id="nd-title" placeholder="Mau ke mana/ngapain? (Cth: Nonton Bioskop)">
+        <input type="datetime-local" id="nd-date">
+        <button class="btn-auth" style="background: linear-gradient(135deg, #2ed573, #7bed9f); box-shadow: 0 5px 15px rgba(46,213,115,0.3); margin-top:15px;" onclick="saveNextDate()">SIMPAN JADWAL</button>
+        <button class="btn-cancel" onclick="closeModal('next-date-modal')">Batal</button>
+    </div></div>
+
+    <div id="create-game-modal" class="modal"><div class="modal-content">
+        <h3 style="color:#2ed573;">Buat Tebakan Baru 🎮</h3>
+        <p style="font-size:12px; color:var(--text-dim); margin-top:0;">Bikin pertanyaan & kasih reward foto rahasia buat pasanganmu!</p>
+        <textarea id="game-question" rows="2" placeholder="Tulis pertanyaanmu di sini..."></textarea>
+        <input type="text" id="game-answer" placeholder="Jawaban yang benar (Singkat aja)">
+        <label style="font-size:12px; color:var(--text-dim); display:block; margin-top:10px; text-align:left;">Upload Foto Reward:</label>
+        <input type="file" id="game-photo" accept="image/*">
+        <button id="btn-save-game" class="btn-auth" style="background: linear-gradient(135deg, #2ed573, #7bed9f); box-shadow: 0 5px 15px rgba(46,213,115,0.3); margin-top:15px;">SIMPAN GAME</button>
+        <button class="btn-cancel" onclick="closeModal('create-game-modal')">Batal</button>
+    </div></div>
+
+    <div id="answer-game-modal" class="modal"><div class="modal-content">
+        <h3 style="color:var(--accent);" id="ans-game-title">Tebakan dari Ayang!</h3>
+        <div style="background:var(--input-bg); padding:15px; border-radius:12px; border:1px solid var(--border-light); margin:15px 0;">
+            <p style="font-size:14px; font-weight:500; margin:0;" id="ans-game-question"></p>
+        </div>
+        <input type="text" id="ans-game-input" placeholder="Ketik jawaban kamu di sini...">
+        <input type="hidden" id="ans-game-id">
+        <button id="btn-submit-ans" class="btn-auth" style="margin-top:10px;" onclick="checkGameAnswer()">KUNCI JAWABAN</button>
+        <button class="btn-cancel" onclick="closeModal('answer-game-modal')">Batal / Nyerah</button>
+    </div></div>
+
+    <div id="lightbox">
+        <img id="lightbox-img" src="">
+        <div class="lb-actions">
+            <button class="btn-heart" id="btn-like-photo" onclick="toggleLike()"><i class="fa fa-heart"></i></button>
+            <div id="lb-date" style="font-size:13px; font-weight:500;"></div>
+        </div>
+        <div class="lightbox-controls">
+            <button class="btn-lb close" onclick="closeLightbox()">TUTUP</button>
+            <button class="btn-lb save auth-admin-only" id="btn-dl-photo">SIMPAN</button>
+            <button class="btn-lb del auth-admin-only" id="btn-del-photo">HAPUS</button>
+        </div>
+    </div>
+
+    <div id="hearts-container"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, get, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB3rwaGyRhptovvtsV3Ksya-2ioIi6Awcc",
+            authDomain: "danzy-c134e.firebaseapp.com",
+            databaseURL: "https://danzy-c134e-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "danzy-c134e",
+            storageBucket: "danzy-c134e.firebasestorage.app",
+            messagingSenderId: "452321469038",
+            appId: "1:452321469038:web:7197a3edfafc410b4ffc7f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // --- SISTEM ANTI-CRASH STORAGE ---
+        const StorageHelper = {
+            get: (k) => { try { return localStorage.getItem(k); } catch(e) { return null; } },
+            set: (k, v) => { try { localStorage.setItem(k, v); } catch(e) { } },
+            remove: (k) => { try { localStorage.removeItem(k); } catch(e) { } }
+        };
+
+        let dataFolders=[], dataNotes=[], dataBucket=[], dataMilestones=[], dataCapsules=[], dataGames=[];
+        let customQuotesData = [];
+        let dataMusic = [];
+        let currentFolderId = null, activePhoto = {};
+        
+        window.activeUsername = StorageHelper.get('archive_username');
+        window.activeRole = StorageHelper.get('archive_role');
+        let guestTimerInterval;
+        let nextDateTargetTime = null;
+        let currentQuoteInterval = null;
+        let isAppStarted = false; 
+
+        // --- EMOJI PICKER INIT ---
+        const emojis = ["😀","😂","🥰","😍","😘","😜","😎","🥺","😭","😡","👍","🙏","❤️","💔","✨","🔥","🎉","🎂","🌹","🎁"];
+        const picker = document.getElementById('emoji-picker');
+        if(picker) {
+            emojis.forEach(e => {
+                const btn = document.createElement('button'); btn.className = 'emoji-btn'; btn.innerText = e;
+                btn.onclick = () => { document.getElementById('wa-chat-input').value += e; window.toggleEmojiPicker(); document.getElementById('wa-chat-input').focus(); };
+                picker.appendChild(btn);
+            });
+        }
+        window.toggleEmojiPicker = () => { if(picker) picker.style.display = picker.style.display === 'none' ? 'flex' : 'none'; };
+
+        // --- SCRIPT ANTI-SCREENSHOT & ANTI-COPAS KHUSUS TAMU ---
+        document.addEventListener('contextmenu', e => {
+            if (window.activeRole === 'Tamu') e.preventDefault();
+        }); 
+        
+        document.addEventListener('keydown', e => {
+            if (window.activeRole === 'Tamu') {
+                if (e.key === 'PrintScreen' || e.keyCode === 44 || e.keyCode === 123 || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.metaKey && e.shiftKey && e.key === 'S')) {
+                    e.preventDefault();
+                    navigator.clipboard.writeText('');
+                    customAlert("Hayo!", "Tamu dilarang screenshot atau curi foto ya! 😝", "error");
+                    document.body.classList.add('blur-mode');
+                    setTimeout(() => document.body.classList.remove('blur-mode'), 2000);
+                }
+            }
+        });
+        
+        document.addEventListener('visibilitychange', () => {
+            if (window.activeRole === 'Tamu') {
+                if(document.hidden) { document.body.classList.add('blur-mode'); } 
+                else { document.body.classList.remove('blur-mode'); }
+            }
+        });
+        window.addEventListener('blur', () => {
+            if (window.activeRole === 'Tamu') document.body.classList.add('blur-mode');
+        });
+        window.addEventListener('focus', () => {
+            if (window.activeRole === 'Tamu') document.body.classList.remove('blur-mode');
+        });
+
+        // --- SISTEM FAB (MENU NGAMBANG) ---
+        window.toggleFab = () => {
+            const menu = document.getElementById('fab-menu');
+            const btn = document.getElementById('fab-main-btn');
+            menu.classList.toggle('show');
+            btn.classList.toggle('active');
+        };
+
+        // --- SISTEM MUSIK ALBUM DINAMIS ---
+        let currentAudio = document.getElementById('bg-music');
+        let isPlaying = false;
+        
+        window.playSong = (filename, title) => {
+            currentAudio.src = filename;
+            currentAudio.play().then(() => {
+                isPlaying = true;
+                const icon = document.getElementById('music-icon');
+                if(icon) icon.className = "fa fa-compact-disc fa-spin";
+                customAlert("Memutar", `Lagu "${title}" lagi diputar~ 🎵`, "success");
+                closeModal('music-modal');
+            }).catch(e => {
+                customAlert("Oops", "Gagal muter lagu. Pastikan lu udah upload file mp3-nya ke GitHub dengan nama yang bener.", "error");
+            });
+        };
+
+        window.stopMusic = () => {
+            currentAudio.pause();
+            isPlaying = false;
+            const icon = document.getElementById('music-icon');
+            if(icon) icon.className = "fa fa-music";
+            closeModal('music-modal');
+        };
+
+        function renderMusicList() {
+            const cont = document.getElementById('music-list-container');
+            if(!cont) return;
+            cont.innerHTML = '';
+            
+            if (dataMusic.length === 0) {
+                cont.innerHTML = '<p style="font-size:11px; color:var(--text-dim);">Belum ada lagu. Tambahin di bawah ya!</p>';
+                return;
+            }
+
+            dataMusic.forEach(m => {
+                let delBtn = window.activeRole !== 'Tamu' ? `<button onclick="window.deleteData('musicList/${m.id}')" style="background:none; border:none; color:#ff4757; cursor:pointer; padding:5px;"><i class="fa fa-trash"></i></button>` : '';
+                cont.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:var(--card-bg); border:1px solid var(--border-light); padding:10px 15px; border-radius:12px;">
+                        <button onclick="playSong('${m.file}', '${m.title}')" style="background:none; border:none; color:var(--text-main); font-family:'Poppins'; font-size:13px; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:8px; flex:1; text-align:left;">
+                            <i class="fa fa-play-circle" style="color:var(--accent); font-size:18px;"></i> ${m.title}
+                        </button>
+                        ${delBtn}
+                    </div>
+                `;
+            });
+        }
+
+        window.saveMusic = () => {
+            const title = document.getElementById('new-music-title').value;
+            const file = document.getElementById('new-music-file').value;
+            if(!title || !file) return customAlert("Belum Lengkap", "Isi judul dan nama file mp3-nya dulu bro!", "error");
+            
+            let finalFile = file.trim();
+            if (!finalFile.endsWith('.mp3')) finalFile += '.mp3';
+
+            push(ref(db, 'musicList'), { title: title.trim(), file: finalFile, timestamp: Date.now() });
+            
+            document.getElementById('new-music-title').value = '';
+            document.getElementById('new-music-file').value = '';
+            customAlert("Berhasil!", "Lagu baru berhasil ditambahin ke playlist! 🎵", "success");
+        };
+
+        // --- DEEP TALK QUESTIONS (50 LIST) ---
+        const deepTalkQuestions = [
+            "Apa hal pertama yang bikin kamu naksir sama aku?",
+            "Momen apa yang bikin kamu mikir 'I love this person'?",
+            "Apa hal kecil yang aku lakuin tapi bikin kamu seneng banget?",
+            "Kalau kita bisa ngulang satu hari dari masa lalu kita, kamu mau ngulang hari apa?",
+            "Menurut kamu, apa perubahan positif terbesar di diri kamu sejak kita jadian?",
+            "Kapan kamu merasa paling dicintai sama aku?",
+            "Ada nggak ketakutan terbesar kamu tentang hubungan kita?",
+            "Apa satu hal yang pengen banget kita capai berdua 5 tahun ke depan?",
+            "Kalau kamu lagi bad mood, apa cara terbaik yang bisa aku lakuin buat nenangin kamu?",
+            "Apa memori paling lucu yang selalu bikin kamu ketawa kalau inget kita?",
+            "Menurut kamu, kelemahan terbesar hubungan kita apa, dan gimana cara perbaikinya?",
+            "Apa rahasia atau hal memalukan yang cuma aku doang yang tau?",
+            "Kalau kita harus pindah ke kota lain cuma berdua, kamu milih pindah ke mana?",
+            "Apa satu hal yang kamu harap aku lebih sering lakuin?",
+            "Menurut kamu, seberapa penting komunikasi di saat kita lagi marahan?",
+            "Apa kata-kata dari aku yang paling nempel di hati kamu sampai sekarang?",
+            "Apa mimpi terbesar kamu yang belum pernah kamu ceritain ke siapapun?",
+            "Pernah nggak kamu ngerasa insecure dalam hubungan ini? Kalau iya, kapan?",
+            "Kalau ada satu sifat buruk aku yang bisa kamu ubah, kamu bakal ubah apa?",
+            "Apa hal yang paling kamu syukuri dari kehadiran aku di hidup kamu?",
+            "Menurut kamu, apa definisi 'pasangan ideal' dan apakah kita udah mendekati itu?",
+            "Apa hal tergila atau paling spontan yang pengen kamu lakuin bareng aku?",
+            "Kalau hubungan kita dijadiin film, kira-kira genrenya apa?",
+            "Kapan terakhir kali kamu merasa sangat bangga sama aku?",
+            "Apa hal yang paling bikin kamu kangen kalau kita lagi nggak ketemu?",
+            "Menurut kamu, apa cara terbaik buat kita nyelesaiin masalah kalau lagi berdebat?",
+            "Apa kebiasaan aku yang awalnya aneh tapi lama-lama kamu jadi suka/terbiasa?",
+            "Pernah nggak ada momen di mana kamu pengen nyerah, tapi sesuatu bikin kamu bertahan?",
+            "Apa kejutan dari aku yang paling berkesan buat kamu?",
+            "Kalau kamu punya kesempatan nanya satu hal ke aku dan aku harus jawab jujur 100%, kamu nanya apa?",
+            "Menurut kamu, apa love language utama aku dan kamu?",
+            "Apa hal yang paling kamu pelajari tentang cinta dari hubungan kita?",
+            "Bagaimana kamu ngebayangin masa tua kita nanti?",
+            "Apa hal yang menurut kamu masih jadi misteri dari diri aku?",
+            "Kalau hari ini hari terakhir kita bisa bareng, apa yang mau kamu lakuin seharian sama aku?",
+            "Apa satu lagu yang kalau kamu denger, langsung otomatis keinget aku?",
+            "Menurut kamu, apa momen 'terberat' yang udah berhasil kita lewatin berdua?",
+            "Apa hal yang paling bikin kamu cemburu tapi kadang gengsi mau bilang?",
+            "Kapan kamu merasa paling nyaman dan bisa jadi diri sendiri 100% di depan aku?",
+            "Apa satu hal yang aku lakuin yang bikin kamu ngerasa dihormati/dihargai?",
+            "Menurut kamu, apa perbedaan terbesar kita dan gimana cara kita melengkapinya?",
+            "Apa pujian dari aku yang paling bikin kamu salting?",
+            "Kalau kita lagi LDR, apa yang paling ngebantu kamu buat tetep kuat?",
+            "Apa hal baru yang pengen banget kamu pelajarin atau coba bareng aku?",
+            "Menurut kamu, apa kelebihan aku yang mungkin aku sendiri nggak sadar?",
+            "Kapan kamu merasa hubungan kita bener-bener 'naik level' atau makin serius?",
+            "Apa ketakutan terbesar kamu tentang komitmen dan masa depan?",
+            "Menurut kamu, apa rahasia biar hubungan kita bisa bertahan selamanya?",
+            "Hal apa yang paling bikin kamu bersyukur punya aku hari ini?",
+            "Dari skala 1-10, seberapa bahagia kamu bareng aku, dan apa yang bisa bikin itu jadi 11?"
+        ];
+
+        let currentDtState = { index: 0, turn: 'Andri' };
+
+        window.openSubGame = (type) => {
+            document.getElementById('game-menu').style.display = 'none';
+            if(type === 'tebak') {
+                document.getElementById('sub-tebak').style.display = 'block';
+            } else {
+                document.getElementById('sub-deeptalk').style.display = 'block';
+                renderDeepTalk();
+            }
+        };
+
+        window.closeSubGame = () => {
+            document.getElementById('sub-tebak').style.display = 'none';
+            document.getElementById('sub-deeptalk').style.display = 'none';
+            document.getElementById('game-menu').style.display = 'block';
+        };
+
+        function renderDeepTalk() {
+            const qEl = document.getElementById('dt-question');
+            const actEl = document.getElementById('dt-action-area');
+            if(!qEl || !actEl) return;
+
+            const qIndex = currentDtState.index % 50; 
+            qEl.innerText = deepTalkQuestions[qIndex];
+
+            if (window.activeRole === 'Tamu') {
+                actEl.innerHTML = `<span style="font-size:12px; color:var(--text-dim);">Tamu cuma bisa nonton 👀</span>`;
+            } else if (currentDtState.turn === window.activeRole) {
+                actEl.innerHTML = `
+                    <button class="btn-auth" style="margin:0; padding:15px; font-size:13px; background: linear-gradient(135deg, #4e8cff, #2a5298); box-shadow: 0 5px 15px rgba(78, 140, 255, 0.3);" onclick="nextDeepTalk()">GANTI PERTANYAAN <i class="fa fa-forward"></i></button>
+                    <div style="font-size:11px; color:var(--text-dim); margin-top:12px;">Sekarang giliranmu buat ganti pertanyaan. Pastiin kalian berdua udah jawab di atas ya!</div>
+                `;
+            } else {
+                actEl.innerHTML = `
+                    <div style="font-size:13px; color:var(--andri-color); font-weight:500; padding:15px; border:1px dashed var(--andri-color); border-radius:12px; background:rgba(78, 140, 255, 0.05);">
+                        <i class="fa fa-hourglass-half fa-spin"></i> Nunggu ${currentDtState.turn} pencet ganti pertanyaan...
+                    </div>
+                `;
+            }
+        }
+
+        window.sendDtChat = () => {
+            const input = document.getElementById('dt-chat-input');
+            if(!input.value.trim()) return;
+            push(ref(db, 'deepTalkChat'), { text: input.value.trim(), sender: window.activeRole, timestamp: Date.now() });
+            input.value = '';
+        };
+
+        window.nextDeepTalk = () => {
+            if(currentDtState.turn !== window.activeRole) return;
+            const nextTurn = window.activeRole === 'Andri' ? 'Afifah' : 'Andri';
+            const nextIndex = (currentDtState.index + 1) % 50;
+            set(ref(db, 'deepTalk'), { index: nextIndex, turn: nextTurn });
+            remove(ref(db, 'deepTalkChat'));
+        };
+
+
+        // --- THEME & GREETING MANAGER (Optimized) ---
+        function updateThemeAndGreeting() {
+            const hour = new Date().getHours();
+            const body = document.body;
+            const greetEl = document.getElementById('nav-greeting');
+            let greetingText = "";
+
+            if (hour >= 6 && hour < 18) {
+                if(!body.classList.contains('light-mode')) body.classList.add('light-mode');
+                if (hour >= 6 && hour < 11) greetingText = `Pagi Sayangku, ${window.activeRole} ☀️`;
+                else if (hour >= 11 && hour < 15) greetingText = `Semangat Siangnya Cintaku, ${window.activeRole} ✨`;
+                else greetingText = `Sore Manis Kesayangan, ${window.activeRole} ⛅`;
+            } else {
+                if(body.classList.contains('light-mode')) body.classList.remove('light-mode');
+                if (hour >= 18 && hour < 23) greetingText = `Malam Indah Cintaku, ${window.activeRole} 🌙`;
+                else greetingText = `Jangan Begadang Sayangku, ${window.activeRole} 😴`;
+            }
+
+            if (window.activeRole === 'Tamu') greetingText = "Mode Tamu 👀";
+            if (greetEl && window.activeRole) greetEl.innerText = greetingText;
+        }
+
+        // --- SISTEM MOOD ---
+        window.openMoodModal = (role) => {
+            if(window.activeRole === 'Tamu') return customAlert('Dilarang!', 'Sstt! Cuma Andri & Afifah yang bisa ngubah mood! 😝', 'error');
+            if(role !== window.activeRole) return customAlert('Eits!', `Kamu gak bisa ganti mood punya ${role} yaa! 😝`, 'error');
+            window.targetMoodRole = role; 
+            document.getElementById('mood-status').value = ''; 
+            openModal('mood-modal');
+        };
+
+        window.saveMood = () => {
+            const mood = document.getElementById('mood-selector').value;
+            const status = document.getElementById('mood-status').value;
+            set(ref(db, `moods/${window.targetMoodRole}`), `${mood}|${status}`); 
+            closeModal('mood-modal');
+        };
+
+        // --- CUSTOM ALERT ---
+        window.customAlert = (title, message, type = 'info') => {
+            const alertModal = document.getElementById('custom-alert');
+            if(!alertModal) return;
+            const iconEl = document.getElementById('custom-alert-icon');
+            
+            document.getElementById('custom-alert-title').innerText = title;
+            document.getElementById('custom-alert-msg').innerText = message;
+            const btnEl = document.getElementById('custom-alert-btn');
+
+            if (type === 'error') {
+                iconEl.innerHTML = '<i class="fa fa-circle-xmark" style="color: #ff4757; text-shadow: 0 0 15px rgba(255,71,87,0.5);"></i>';
+                btnEl.style.background = 'linear-gradient(135deg, #ff4757, #ff6b81)';
+                btnEl.style.boxShadow = '0 5px 15px rgba(255,71,87,0.3)';
+            } else if (type === 'success') {
+                iconEl.innerHTML = '<i class="fa fa-circle-check" style="color: #2ed573; text-shadow: 0 0 15px rgba(46,213,115,0.5);"></i>';
+                btnEl.style.background = 'linear-gradient(135deg, #2ed573, #7bed9f)';
+                btnEl.style.boxShadow = '0 5px 15px rgba(46,213,115,0.3)';
+            } else {
+                iconEl.innerHTML = '<i class="fa fa-bell" style="color: var(--accent); text-shadow: 0 0 15px var(--accent-glow);"></i>';
+                btnEl.style.background = 'linear-gradient(135deg, var(--accent), #ff7aae)';
+                btnEl.style.boxShadow = '0 5px 15px var(--accent-glow)';
+            }
+            alertModal.style.display = 'flex';
+        };
+        window.closeCustomAlert = () => { document.getElementById('custom-alert').style.display = 'none'; };
+
+        window.customConfirm = (title, message, onConfirm) => {
+            const confirmModal = document.getElementById('custom-confirm');
+            if(!confirmModal) return;
+            document.getElementById('custom-confirm-title').innerText = title;
+            document.getElementById('custom-confirm-msg').innerText = message;
+            confirmModal.style.display = 'flex';
+            
+            document.getElementById('custom-confirm-yes').onclick = () => {
+                confirmModal.style.display = 'none';
+                onConfirm();
+            };
+        };
+        window.closeCustomConfirm = () => { document.getElementById('custom-confirm').style.display = 'none'; };
+
+        // --- SISTEM AUTHENTICATION ---
+        window.toggleAuth = () => {
+            const loginBox = document.getElementById('login-box');
+            const regBox = document.getElementById('register-box');
+            if (loginBox && regBox) {
+                if(loginBox.style.display === 'none') { loginBox.style.display = 'block'; regBox.style.display = 'none'; }
+                else { loginBox.style.display = 'none'; regBox.style.display = 'block'; }
+            }
+        };
+
+        window.doRegister = async () => {
+            const u = document.getElementById('reg-username').value.toLowerCase().trim();
+            const p = document.getElementById('reg-password').value;
+            const r = document.getElementById('reg-role').value;
+            const secretCode = document.getElementById('reg-secret').value;
+            
+            if(!u || !p) return customAlert("Oops!", "Isi username dan password dulu ya!", "error");
+            if(secretCode !== "andriafifah") return customAlert("Ditolak!", "Ups! Kode rahasianya salah. Menu daftar ini cuma khusus buat Andri & Afifah ya 😝", "error");
+
+            const allUsersSnap = await get(ref(db, 'users'));
+            if(allUsersSnap.exists()) {
+                const usersData = allUsersSnap.val();
+                for(let key in usersData) {
+                    if(usersData[key].role === r) {
+                        return customAlert("Peran Sudah Diambil!", `Waduh, peran sebagai ${r} udah ada yang punya! Jangan curang ya 😂`, "error");
+                    }
+                }
+            }
+            
+            const userRef = ref(db, `users/${u}`);
+            const snapshot = await get(userRef);
+            if(snapshot.exists()) return customAlert("Gagal Daftar", "Username sudah dipakai, cari yang lain ya!", "error");
+            
+            await set(userRef, { password: btoa(p), role: r });
+            saveLoginState(u, r);
+        };
+
+        window.doLogin = async () => {
+            const u = document.getElementById('login-username').value.toLowerCase().trim();
+            const p = document.getElementById('login-password').value;
+            if(!u || !p) return customAlert("Oops!", "Isi username dan password dulu ya!", "error");
+
+            const snapshot = await get(ref(db, `users/${u}`));
+            if(!snapshot.exists()) return customAlert("Gagal Masuk", "Username tidak ditemukan!", "error");
+            if(atob(snapshot.val().password) !== p) return customAlert("Gagal Masuk", "Password kamu salah!", "error");
+            saveLoginState(u, snapshot.val().role);
+        };
+
+        // --- SISTEM MODE TAMU ---
+        window.masukTamu = () => {
+            let lastAccess = StorageHelper.get('guest_last_access');
+            let now = Date.now();
+            
+            if (lastAccess && (now - parseInt(lastAccess)) < (24 * 60 * 60 * 1000)) {
+                let waitTime = Math.ceil((24 * 60 * 60 * 1000 - (now - parseInt(lastAccess))) / 3600000);
+                customAlert("Akses Ditolak!", `Kamu udah sempet masuk hari ini. Tunggu ${waitTime} jam lagi ya!`, "error");
+                return;
+            }
+            
+            StorageHelper.set('guest_last_access', now);
+            StorageHelper.set('guest_start_time', now);
+            saveLoginState('guest', 'Tamu');
+        };
+
+        function applyGuestMode() {
+            try {
+                document.querySelectorAll('.auth-admin-only').forEach(el => el.style.display = 'none');
+                
+                const likeBtn = document.getElementById('btn-like-photo');
+                if (likeBtn) likeBtn.style.pointerEvents = 'none';
+
+                document.body.classList.add('guest-active');
+
+                const widget = document.getElementById('dashboard-widget');
+                if (widget) {
+                    const hearts = widget.querySelectorAll('.corner-heart');
+                    for (let i = 0; i < hearts.length; i++) { hearts[i].style.display = 'block'; }
+                }
+
+                let startTime = StorageHelper.get('guest_start_time') || Date.now();
+                
+                const existingTimer = document.getElementById('guest-countdown');
+                if(existingTimer) existingTimer.remove();
+
+                const timerEl = document.createElement('div');
+                timerEl.id = 'guest-countdown';
+                timerEl.style.cssText = "position:fixed; top:70px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg, #ff4757, #ff6b81); color:white; padding:8px 20px; border-radius:50px; font-weight:bold; z-index:9999; font-size:13px; box-shadow:0 5px 15px rgba(255,71,87,0.5); font-family: 'Poppins';";
+                document.body.appendChild(timerEl);
+
+                guestTimerInterval = setInterval(() => {
+                    let elapsed = Math.floor((Date.now() - parseInt(startTime)) / 1000);
+                    let timeLeft = 30 - elapsed; 
+                    
+                    if(timeLeft <= 0) {
+                        clearInterval(guestTimerInterval);
+                        customAlert("Waktu Habis!", "⏰ TEEEET! Waktu cuci mata tamu (30 detik) udah habis! Silakan balik lagi besok...", "error");
+                        
+                        StorageHelper.remove('archive_username');
+                        StorageHelper.remove('archive_role');
+                        StorageHelper.remove('guest_start_time');
+                        
+                        document.body.classList.remove('guest-active');
+                        
+                        setTimeout(() => location.reload(), 3000);
+                    } else {
+                        timerEl.innerHTML = `<i class="fa fa-stopwatch"></i> Sisa Waktu Tamu: ${timeLeft}s`;
+                    }
+                }, 1000);
+            } catch(e) { console.error(e); }
+        }
+
+        function applyUserMode() {
+            try {
+                if (guestTimerInterval) clearInterval(guestTimerInterval);
+                const timerEl = document.getElementById('guest-countdown');
+                if (timerEl) timerEl.remove();
+
+                document.body.classList.remove('guest-active');
+                document.querySelectorAll('.auth-admin-only').forEach(el => el.style.display = '');
+                
+                const likeBtn = document.getElementById('btn-like-photo');
+                if (likeBtn) likeBtn.style.pointerEvents = 'auto';
+
+                const widget = document.getElementById('dashboard-widget');
+                if (widget) {
+                    const hearts = widget.querySelectorAll('.corner-heart');
+                    for (let i = 0; i < hearts.length; i++) { hearts[i].style.display = 'none'; }
+                }
+            } catch(e) {}
+        }
+
+        function saveLoginState(username, role) {
+            StorageHelper.set('archive_username', username);
+            StorageHelper.set('archive_role', role);
+            window.activeUsername = username; window.activeRole = role;
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('main-ui').style.display = 'block';
+            
+            if(role === 'Tamu') applyGuestMode();
+            else applyUserMode();
+            
+            startApp();
+        }
+
+        // --- SISTEM LOGOUT SOFT ---
+        window.doLogout = () => {
+            customConfirm("Keluar?", "Yakin mau keluar dari Archive?", () => {
+                StorageHelper.remove('archive_username');
+                StorageHelper.remove('archive_role');
+                StorageHelper.remove('guest_start_time');
+                if(guestTimerInterval) clearInterval(guestTimerInterval);
+                closeCustomConfirm();
+
+                document.body.classList.remove('guest-active');
+                document.getElementById('main-ui').style.display = 'none';
+                document.getElementById('auth-screen').style.display = 'flex';
+                
+                document.getElementById('login-username').value = '';
+                document.getElementById('login-password').value = '';
+                
+                window.activeUsername = null; window.activeRole = null; currentFolderId = null;
+                
+                if(isPlaying) stopMusic();
+                const timerEl = document.getElementById('guest-countdown');
+                if (timerEl) timerEl.remove();
+            });
+        };
+
+        // --- FITUR KATA KATA RANDOM ---
+        window.saveCustomQuote = () => {
+            const t = document.getElementById('quote-input').value;
+            if(!t) return customAlert("Kosong!", "Tulis kata-katanya dulu dong sayang!", "info");
+            push(ref(db, 'customQuotes'), { text: t, sender: window.activeRole, timestamp: Date.now() });
+            document.getElementById('quote-input').value = '';
+            customAlert("Berhasil!", "Kata-kata berhasil disimpen, nanti bakal muncul gantian di HP ayang! ✨", "success");
+        };
+
+        function renderQuotesList() {
+            const manageCont = document.getElementById('quote-manage-list');
+            if(!manageCont) return;
+            manageCont.innerHTML = '';
+            
+            const myQuotes = customQuotesData.filter(q => q.sender === window.activeRole);
+            if(myQuotes.length === 0) {
+                manageCont.innerHTML = '<p style="font-size:11px; color:var(--text-dim);">Belum ada kata-kata yang kamu bikin.</p>';
+            }
+            myQuotes.forEach(q => {
+                manageCont.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:12px; background:var(--input-bg); padding:8px 12px; border-radius:8px; text-align:left;">
+                    <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-right:10px;">"${q.text}"</span> 
+                    <button onclick="window.deleteData('customQuotes/${q.id}')" style="color:#ff4757; background:none; border:none; cursor:pointer;"><i class="fa fa-trash"></i></button>
+                </div>`;
+            });
+        }
+
+        function rotateQuote() {
+            const dqEl = document.getElementById('daily-quote-text');
+            if(!dqEl) return;
+            
+            let partnerQuotes = customQuotesData.filter(q => q.sender !== window.activeRole);
+            if (window.activeRole === 'Tamu') partnerQuotes = customQuotesData; 
+            
+            if (partnerQuotes.length > 0) {
+                dqEl.style.display = 'block';
+                dqEl.style.opacity = '0'; 
+                setTimeout(() => {
+                    const r = partnerQuotes[Math.floor(Math.random() * partnerQuotes.length)];
+                    dqEl.innerText = `"${r.text}"`;
+                    dqEl.style.opacity = '1'; 
+                }, 500);
+            } else {
+                dqEl.style.display = 'none'; 
+            }
+        }
+
+        // --- SISTEM CHAT WA BARU (FOTO & TEXT & EMOJI) ---
+        window.sendWaChat = () => {
+            const input = document.getElementById('wa-chat-input');
+            const t = input.value;
+            if(!t.trim()) return;
+            push(ref(db, 'notes'), {text: t, image: null, timestamp: Date.now(), sender: window.activeRole});
+            input.value = '';
+        };
+
+        window.sendWaPhoto = async (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            customAlert("Mengupload...", "Tunggu bentar sayang, foto lagi dikirim ke chat...", "info");
+            const b64 = await compress(file);
+            push(ref(db, 'notes'), {text: '', image: b64, timestamp: Date.now(), sender: window.activeRole});
+            e.target.value = '';
+            closeCustomAlert();
+        };
+
+        window.uploadWaWallpaper = async (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            customAlert("Mengganti...", "Sabar ya, lagi masang wallpaper baru buat chat kita...", "info");
+            const b64 = await compress(file);
+            set(ref(db, 'waWallpaper'), b64);
+            e.target.value = '';
+            closeCustomAlert();
+        };
+
+        window.handleWaEnter = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                window.sendWaChat();
+            }
+        };
+
+        // --- SISTEM UTAMA APP ---
+        function startApp() {
+            updateThemeAndGreeting(); 
+            
+            if(!isAppStarted) {
+                setInterval(() => {
+                    updateTimer();
+                    updateThemeAndGreeting(); 
+                }, 1000); 
+                createHearts();
+                
+                onValue(ref(db, 'waWallpaper'), snap => {
+                    const bg = snap.val();
+                    const waCont = document.querySelector('.wa-container');
+                    if(waCont) {
+                        if(bg) {
+                            waCont.style.backgroundImage = `url(${bg})`;
+                            waCont.style.backgroundSize = "cover";
+                            waCont.style.backgroundPosition = "center";
+                        } else {
+                            waCont.style.backgroundImage = "url('https://www.transparenttextures.com/patterns/cubes.png')"; 
+                        }
+                    }
+                });
+
+                onValue(ref(db, 'archive'), snap => {
+                    const d = snap.val(); dataFolders = d ? Object.keys(d).map(k => ({...d[k], id: k})) : [];
+                    renderFolders(); if(currentFolderId) renderPhotos(dataFolders.find(f => f.id === currentFolderId));
+                });
+                
+                onValue(ref(db, 'notes'), snap => {
+                    const d = snap.val(); dataNotes = d ? Object.keys(d).map(k => ({...d[k], id: k})) : [];
+                    dataNotes.sort((a,b) => a.timestamp - b.timestamp);
+                    renderNotes();
+                });
+                
+                // LISTENER MUSIK DINAMIS
+                onValue(ref(db, 'musicList'), snap => {
+                    const d = snap.val(); 
+                    dataMusic = d ? Object.keys(d).map(k => ({...d[k], id: k})) : [];
+                    renderMusicList();
+                });
+
+                onValue(ref(db, 'timecapsules'), snap => {
+                    const d = snap.val(); dataCapsules = d ? Object.keys(d).map(k => ({...d[k], id: k})) : [];
+                    renderCapsules();
+                });
+                onValue(ref(db, 'bucket'), snap => {
+                    const d = snap.val(); dataBucket = d ? Object.keys(d).map(k => ({...d[k], id: k})) : [];
+                    renderBucket();
+                });
+                onValue(ref(db, 'milestones'), snap => {
+                    const d = snap.val(); dataMilestones = d ? Object.keys(d).map(k => ({...d[k], id: k})) : [];
+                    renderMilestones();
+                });
+                onValue(ref(db, 'games'), snap => {
+                    const d = snap.val(); dataGames = d ? Object.keys(d).map(k => ({...d[k], id: k})) : [];
+                    renderGames();
+                });
+                onValue(ref(db, 'deepTalk'), snap => {
+                    currentDtState = snap.val() || { index: 0, turn: 'Andri' };
+                    renderDeepTalk();
+                });
+                onValue(ref(db, 'deepTalkChat'), snap => {
+                    const d = snap.val();
+                    const cont = document.getElementById('dt-chat-container');
+                    if(!cont) return;
+                    cont.innerHTML = '';
+                    if(d) {
+                        Object.keys(d).forEach(k => {
+                            const msg = d[k];
+                            const isMe = msg.sender === window.activeRole;
+                            const bubbleClass = isMe ? 'me' : 'them';
+                            const color = msg.sender === 'Andri' ? 'var(--andri-color)' : 'var(--accent)';
+                            cont.innerHTML += `
+                                <div class="dt-wrapper ${bubbleClass}">
+                                    <div class="dt-sender" style="color:${color};">${msg.sender}</div>
+                                    <div class="dt-bubble ${bubbleClass}">${msg.text}</div>
+                                </div>`;
+                        });
+                        cont.scrollTop = cont.scrollHeight;
+                    } else {
+                        cont.innerHTML = '<div style="text-align:center; font-size:12px; color:var(--text-dim); margin-top:50px;">Yuk mulai saling jawab pertanyaannya di sini! 👇</div>';
+                    }
+                });
+                
+                onValue(ref(db, 'customQuotes'), snap => {
+                    const d = snap.val(); 
+                    customQuotesData = d ? Object.keys(d).map(k => ({...d[k], id: k})) : [];
+                    renderQuotesList();
+                    rotateQuote(); 
+                });
+                if(currentQuoteInterval) clearInterval(currentQuoteInterval);
+                currentQuoteInterval = setInterval(rotateQuote, 15000); 
+
+                onValue(ref(db, `hugs/${window.activeRole}`), snap => {
+                    const d = snap.val();
+                    if (d && d.pending && window.activeRole !== 'Tamu') {
+                        document.getElementById('hug-animation').style.display = 'flex';
+                        setTimeout(() => {
+                            document.getElementById('hug-animation').style.display = 'none';
+                            customAlert("HUG RECEIVED! 🫂", `${d.sender} baru aja ngirimin kamu pelukan virtual! ❤️`, "success");
+                        }, 3500);
+                        remove(ref(db, `hugs/${window.activeRole}`));
+                    }
+                });
+                
+                onValue(ref(db, 'nextDate'), snap => {
+                    try {
+                        const d = snap.val();
+                        const titleEl = document.getElementById('next-date-title');
+                        const delBtn = document.getElementById('btn-delete-date');
+                        if(d && d.date) {
+                            if(titleEl) titleEl.innerText = d.title;
+                            nextDateTargetTime = new Date(d.date).getTime();
+                            if(delBtn && window.activeRole !== 'Tamu') delBtn.style.display = 'inline-block';
+                        } else {
+                            if(titleEl) titleEl.innerText = "Belum Ada Jadwal";
+                            nextDateTargetTime = null;
+                            if(delBtn) delBtn.style.display = 'none';
+                        }
+                    } catch(e) {}
+                });
+                
+                onValue(ref(db, 'moods'), snap => {
+                    const d = snap.val() || {};
+                    try {
+                        if(d.Andri) {
+                            const parts = d.Andri.split('|');
+                            const moodE = document.getElementById('mood-emoji-Andri'); if(moodE) moodE.innerText = parts[0] || '❓';
+                            const moodT = document.getElementById('mood-text-Andri'); if(moodT) moodT.innerText = parts[1] || 'Belum update';
+                            const statT = document.getElementById('status-text-Andri'); if(statT) statT.innerText = parts[2] ? `"${parts[2]}"` : '';
+                        }
+                        if(d.Afifah) {
+                            const parts = d.Afifah.split('|');
+                            const moodE = document.getElementById('mood-emoji-Afifah'); if(moodE) moodE.innerText = parts[0] || '❓';
+                            const moodT = document.getElementById('mood-text-Afifah'); if(moodT) moodT.innerText = parts[1] || 'Belum update';
+                            const statT = document.getElementById('status-text-Afifah'); if(statT) statT.innerText = parts[2] ? `"${parts[2]}"` : '';
+                        }
+                    } catch(e) {}
+                });
+                isAppStarted = true;
+            } else {
+                renderFolders(); renderNotes(); renderCapsules(); renderBucket(); renderMilestones(); renderGames(); renderQuotesList(); renderDeepTalk(); renderMusicList();
+                if (nextDateTargetTime !== null) {
+                    const delBtn = document.getElementById('btn-delete-date');
+                    if(delBtn && window.activeRole !== 'Tamu') delBtn.style.display = 'inline-block';
+                    else if (delBtn) delBtn.style.display = 'none';
+                }
+            }
+        }
+
+        if(window.activeUsername && window.activeRole) {
+            const authS = document.getElementById('auth-screen');
+            const mainU = document.getElementById('main-ui');
+            if(authS) authS.style.display = 'none';
+            if(mainU) mainU.style.display = 'block';
+            if(window.activeRole === 'Tamu') applyGuestMode();
+            else applyUserMode();
+            startApp();
+        }
+
+        window.sendVirtualHug = () => {
+            const target = window.activeRole === 'Andri' ? 'Afifah' : 'Andri';
+            set(ref(db, `hugs/${target}`), { sender: window.activeRole, timestamp: Date.now(), pending: true });
+            customAlert("Terkirim!", `Pelukan virtual udah dikirim ke ${target}! Tinggal nunggu dia buka webnya 🫂❤️`, "success");
+        };
+
+        window.switchView = (v) => {
+            ['home-view','notes-view','bucket-view','album-view', 'game-view'].forEach(id => {
+                const el = document.getElementById(id); if(el) el.style.display='none';
+            });
+            ['tab-gallery','tab-notes','tab-bucket', 'tab-game'].forEach(id => {
+                const el = document.getElementById(id); if(el) el.classList.remove('active');
+            });
+            
+            const setV = (viewId, tabId) => {
+                const view = document.getElementById(viewId); if(view) view.style.display='block';
+                const tab = document.getElementById(tabId); if(tab) tab.classList.add('active');
+            };
+
+            if(v === 'gallery') { setV('home-view', 'tab-gallery'); currentFolderId = null; }
+            if(v === 'notes') { 
+                setV('notes-view', 'tab-notes'); 
+                const cont = document.getElementById('notes-container');
+                if(cont) cont.scrollTop = cont.scrollHeight; 
+            }
+            if(v === 'bucket') setV('bucket-view', 'tab-bucket');
+            if(v === 'game') { setV('game-view', 'tab-game'); closeSubGame(); }
+            if(v === 'album') { const view = document.getElementById('album-view'); if(view) view.style.display='block'; }
+        };
+
+        function renderFolders() {
+            const cont = document.getElementById('folder-container'); if(!cont) return;
+            const sel = document.getElementById('upload-target'); if(!sel) return;
+            cont.innerHTML = ''; sel.innerHTML = '<option value="new">-- Buat Folder Baru --</option>';
+            dataFolders.forEach(f => {
+                const div = document.createElement('div'); div.className='folder-card';
+                div.onclick = () => { currentFolderId = f.id; document.getElementById('active-folder-title').innerText=f.name; document.getElementById('folder-note').innerText=f.note||''; switchView('album'); renderPhotos(f); };
+                let img = f.cover || (f.photos ? f.photos[Object.keys(f.photos)[0]].url : 'https://via.placeholder.com/300x300/1a1c23/ff529a?text=Kosong');
+                div.innerHTML = `<img src="${img}"><div class="info">${f.name}</div>`;
+                cont.appendChild(div); sel.innerHTML += `<option value="${f.id}">${f.name}</option>`;
+            });
+        }
+
+        function renderPhotos(f) {
+            const cont = document.getElementById('photo-container'); if(!cont) return;
+            cont.innerHTML = '';
+            if(!f || !f.photos) return cont.innerHTML = '<p style="color:#666;">Belum ada foto.</p>';
+            Object.keys(f.photos).reverse().forEach(k => {
+                const p = f.photos[k]; const div = document.createElement('div'); div.className='folder-card';
+                div.onclick = () => openLightbox(p.url, k, p.timestamp, p.liked);
+                div.innerHTML = `<img src="${p.url}">${p.liked ? '<i class="fa fa-heart" style="position:absolute; top:12px; right:12px; color:#ff4757; font-size:18px; filter: drop-shadow(0 0 5px rgba(0,0,0,0.8));"></i>' : ''}`;
+                cont.appendChild(div);
+            });
+        }
+
+        function renderNotes() {
+            const cont = document.getElementById('notes-container'); if(!cont) return;
+            cont.innerHTML = '';
+            
+            dataNotes.forEach(n => {
+                const realSender = n.sender || 'Afifah'; 
+                const isMe = realSender === window.activeRole;
+                const bubbleClass = isMe ? 'wa-me' : 'wa-them';
+                
+                const senderName = realSender === 'Andri' ? '👦🏻 Andri' : '👩🏻 Afifah'; 
+                const color = realSender === 'Andri' ? 'var(--andri-color)' : 'var(--accent)';
+                
+                const timeObj = new Date(n.timestamp);
+                const timeStr = timeObj.getHours().toString().padStart(2, '0') + ':' + timeObj.getMinutes().toString().padStart(2, '0');
+                
+                let canDelete = (realSender === window.activeRole && window.activeRole !== 'Tamu');
+                
+                let mediaHtml = n.image ? `<img src="${n.image}" onclick="openLightbox('${n.image}', 'chat_img', ${n.timestamp}, false)" style="max-width: 100%; border-radius: 8px; margin-top: 5px; margin-bottom: 5px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);">` : '';
+                let textHtml = n.text ? `<div class="wa-text">${n.text}</div>` : '';
+                
+                cont.innerHTML += `
+                    <div class="wa-wrapper ${bubbleClass}">
+                        <div class="wa-bubble ${bubbleClass}">
+                            ${!isMe ? `<div class="wa-sender" style="color: ${color}">${senderName}</div>` : ''}
+                            ${mediaHtml}
+                            ${textHtml}
+                            <div class="wa-meta">
+                                <span>${timeStr}</span>
+                                ${canDelete ? `<i class="fa fa-trash wa-delete" onclick="window.deleteData('notes/${n.id}')"></i>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            cont.scrollTop = cont.scrollHeight;
+        }
+
+        function renderCapsules() {
+            const cont = document.getElementById('capsules-container'); if(!cont) return;
+            cont.innerHTML = '';
+            dataCapsules.reverse().forEach(c => {
+                const div = document.createElement('div'); 
+                const unlockTime = new Date(c.unlockDate).getTime();
+                const isUnlocked = Date.now() >= unlockTime;
+                let canDelete = (c.sender === window.activeRole && window.activeRole !== 'Tamu');
+                
+                div.className='list-card'; div.style = 'border-left: 4px solid var(--capsule-color); background: rgba(243, 156, 18, 0.05); margin-bottom: 15px;';
+                
+                if (isUnlocked) {
+                    div.innerHTML = `
+                        <div class="list-text">
+                            <div style="margin-bottom:8px; display:flex; justify-content:space-between;">
+                                <span class="sender-badge" style="background:rgba(243, 156, 18, 0.2); color:var(--capsule-color);">⏳ Kapsul Terbuka (dari ${c.sender})</span>
+                                <span style="font-size:11px; color:#999;">${new Date(c.unlockDate).toLocaleDateString('id-ID')}</span>
+                            </div>
+                            <div style="white-space: pre-wrap;">${c.text}</div>
+                        </div>
+                        ${canDelete ? `<button onclick="window.deleteData('timecapsules/${c.id}')" style="color:#ff4757; background:none; border:none; cursor:pointer;"><i class="fa fa-trash"></i></button>` : ''}
+                    `;
+                } else {
+                    div.innerHTML = `
+                        <div class="list-text" style="text-align:center; padding: 10px 0;">
+                            <i class="fa fa-lock" style="font-size:28px; color:var(--capsule-color); margin-bottom:10px;"></i>
+                            <div style="font-weight:600; color:var(--capsule-color);">Kapsul Waktu dari ${c.sender}</div>
+                            <div style="font-size:12px; color:var(--text-dim); margin-top:5px;">Bisa dibuka pada: <b>${new Date(c.unlockDate).toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'})}</b></div>
+                        </div>
+                        ${canDelete ? `<button onclick="window.deleteData('timecapsules/${c.id}')" style="color:#ff4757; background:none; border:none; cursor:pointer; position:absolute; top:15px; right:15px;"><i class="fa fa-trash"></i></button>` : ''}
+                    `;
+                }
+                cont.appendChild(div);
+            });
+        }
+
+        function renderBucket() {
+            const cont = document.getElementById('bucket-container'); if(!cont) return;
+            cont.innerHTML = '';
+            dataBucket.forEach(b => {
+                const div = document.createElement('div'); div.className = `list-card ${b.done ? 'done' : ''}`;
+                div.innerHTML = `
+                    <button class="check-btn" onclick="toggleBucket('${b.id}', ${!b.done})"><i class="fa ${b.done ? 'fa-check-circle' : 'fa-circle'}"></i></button>
+                    <div class="list-text">${b.text}</div>
+                    <button class="auth-admin-only" onclick="window.deleteData('bucket/${b.id}')" style="color:#ff4757; background:none; border:none; font-size:16px; cursor:pointer;"><i class="fa fa-trash"></i></button>
+                `;
+                cont.appendChild(div);
+            });
+        }
+
+        function renderMilestones() {
+            const mainCont = document.getElementById('milestone-container'); if(!mainCont) return;
+            const manageCont = document.getElementById('ms-manage-list');
+            mainCont.innerHTML = ''; if(manageCont) manageCont.innerHTML = '';
+            dataMilestones.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(m => {
+                const dateStr = new Date(m.date).toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+                mainCont.innerHTML += `<div class="milestone-item"><span>${m.title}</span><span>${dateStr}</span></div>`;
+                if(manageCont) manageCont.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:12px; background:var(--input-bg); padding:8px 12px; border-radius:8px;">${m.title} <br><span style="color:#a0a0a0">${dateStr}</span> <button onclick="window.deleteData('milestones/${m.id}')" style="color:#ff4757; background:none; border:none; cursor:pointer;"><i class="fa fa-times"></i></button></div>`;
+            });
+        }
+
+        function renderGames() {
+            const cont = document.getElementById('games-container'); if(!cont) return;
+            cont.innerHTML = '';
+            dataGames.reverse().forEach(g => {
+                const div = document.createElement('div'); 
+                div.className = 'list-card';
+                if (g.target === window.activeRole) {
+                    if (g.isSolved) {
+                        div.style = 'border-left: 4px solid #2ed573; background: rgba(46, 213, 115, 0.05); display:block; text-align:center; padding: 25px 15px;';
+                        div.innerHTML = `
+                            <i class="fa fa-unlock" style="font-size:28px; color:#2ed573; margin-bottom:10px;"></i>
+                            <div style="font-weight:600; color:#2ed573; font-size:16px;">Reward Terbuka!</div>
+                            <div style="font-size:12px; color:var(--text-dim); margin-top:5px; margin-bottom: 15px;">Kamu berhasil jawab tebakan dari ${g.sender}</div>
+                            <button class="btn-auth" style="margin:0; padding:12px; font-size:13px; background: linear-gradient(135deg, #2ed573, #7bed9f);" onclick="openLightbox('${g.rewardPhoto}', 'game_reward', ${g.timestamp}, false)"><i class="fa fa-image"></i> LIHAT REWARD FOTO</button>
+                        `;
+                    } else {
+                        div.style = 'border-left: 4px solid #ff4757; background: rgba(255, 71, 87, 0.05); display:block; text-align:center; padding: 25px 15px;';
+                        div.innerHTML = `
+                            <i class="fa fa-gift" style="font-size:28px; color:#ff4757; margin-bottom:10px;"></i>
+                            <div style="font-weight:600; color:#ff4757; font-size:16px;">Tebakan dari ${g.sender}!</div>
+                            <div style="font-size:12px; color:var(--text-dim); margin-top:5px; margin-bottom: 15px;">Jawab dengan benar buat dapetin foto rahasia.</div>
+                            <button class="btn-auth" style="margin:0; padding:12px; font-size:13px; background: linear-gradient(135deg, #ff4757, #ff6b81);" onclick="openAnswerModal('${g.id}')">JAWAB SEKARANG</button>
+                        `;
+                    }
+                } 
+                else if (g.sender === window.activeRole) {
+                    div.style = 'border-left: 4px solid var(--text-dim); background: var(--input-bg); display:flex;';
+                    div.innerHTML = `
+                        <div class="list-text">
+                            <div style="font-size:11px; font-weight:600; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">Buatanmu buat ${g.target}</div>
+                            <div style="margin-top:5px; font-size:13px;">Status: <b>${g.isSolved ? '<span style="color:#2ed573">Berhasil Dijawab! 🔓</span>' : '<span style="color:#ff4757">Belum Terjawab 🔒</span>'}</b></div>
+                        </div>
+                        <button onclick="window.deleteData('games/${g.id}')" style="color:#ff4757; background:none; border:none; cursor:pointer;"><i class="fa fa-trash"></i></button>
+                    `;
+                }
+                if (g.target === window.activeRole || g.sender === window.activeRole) cont.appendChild(div);
+            });
+        }
+
+        window.openModal = id => { const el = document.getElementById(id); if(el) el.style.display = 'flex'; };
+        window.closeModal = id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; };
+        
+        document.getElementById('btn-delete-folder').onclick = () => {
+            if(!currentFolderId) return;
+            customConfirm("Hapus Folder?", "Yakin mau hapus folder ini beserta semua foto di dalamnya secara permanen?", () => {
+                remove(ref(db, `archive/${currentFolderId}`));
+                customAlert("Berhasil!", "Folder sudah dihapus selamanya.", "success");
+                switchView('gallery');
+            });
+        };
+
+        window.deleteData = path => { 
+            customConfirm("Hapus Data?", "Yakin mau hapus data ini permanen?", () => {
+                remove(ref(db, path));
+            });
+        };
+
+        window.deleteNextDate = () => {
+            customConfirm("Hapus Jadwal?", "Yakin mau hapus jadwal ngedate ini?", () => {
+                remove(ref(db, 'nextDate'));
+            });
+        };
+
+        document.getElementById('btn-process-upload').onclick = async () => {
+            const btn = document.getElementById('btn-process-upload'); const files = document.getElementById('file-input').files;
+            if(!files.length) return customAlert("Tunggu!", "Pilih fotonya dulu dong sebelum upload!", "info");
+            btn.innerText = "Mengupload..."; btn.disabled = true;
+            const target = document.getElementById('upload-target').value;
+            let fId = target;
+            if(target === "new") {
+                const nRef = push(ref(db, 'archive')); fId = nRef.key;
+                await set(nRef, {name: (document.getElementById('new-folder-name').value || "NEW FOLDER").toUpperCase()});
+            }
+            for(let f of files) {
+                const b64 = await compress(f);
+                await push(ref(db, `archive/${fId}/photos`), {url: b64, timestamp: Date.now(), liked: false});
+            }
+            btn.innerText = "UPLOAD FOTO"; btn.disabled = false; document.getElementById('file-input').value = ''; closeModal('upload-modal');
+        };
+
+        window.saveCapsule = () => {
+            const t = document.getElementById('capsule-input').value;
+            const d = document.getElementById('capsule-date').value;
+            if(!t || !d) return customAlert("Belum Lengkap!", "Isi pesan dan pilih tanggal bukanya ya!", "info");
+            
+            push(ref(db, 'timecapsules'), {text: t, unlockDate: d, sender: window.activeRole, timestamp: Date.now()});
+            document.getElementById('capsule-input').value = ''; document.getElementById('capsule-date').value = '';
+            closeModal('capsule-modal');
+        };
+
+        window.sendKangenPing = () => {
+            const emoji = window.activeRole === 'Andri' ? '👦🏻' : '👩🏻';
+            const msg = `🚨 PING DARURAT! 🚨\n\n${emoji} ${window.activeRole} lagi kangen berat banget nih sama kamu! Buruan bales atau samperin sekarang! 🥺❤️`;
+            push(ref(db, 'notes'), {text: msg, timestamp: Date.now(), sender: window.activeRole});
+            customAlert("Terkirim!", "Ping kangen berhasil dikirim ke chat! 🥺❤️", "success");
+        };
+
+        document.getElementById('btn-save-bucket').onclick = () => {
+            const t = document.getElementById('bucket-input').value;
+            if(t) push(ref(db, 'bucket'), {text: t, done: false});
+            document.getElementById('bucket-input').value = ''; closeModal('bucket-modal');
+        };
+        window.toggleBucket = (id, s) => { if(window.activeRole !== 'Tamu') update(ref(db, `bucket/${id}`), {done: s}); };
+        
+        window.openMilestoneModal = () => openModal('milestone-modal');
+        document.getElementById('btn-save-ms').onclick = () => {
+            const t = document.getElementById('ms-title').value, d = document.getElementById('ms-date').value;
+            if(t && d) push(ref(db, 'milestones'), {title: t, date: d});
+            document.getElementById('ms-title').value = ''; document.getElementById('ms-date').value = '';
+        };
+
+        window.saveNextDate = () => {
+            const t = document.getElementById('nd-title').value;
+            const d = document.getElementById('nd-date').value;
+            if(!t || !d) return customAlert("Isi dong!", "Mau ngedate ke mana dan kapan nih?", "error");
+            set(ref(db, 'nextDate'), {title: t, date: d});
+            document.getElementById('nd-title').value = ''; document.getElementById('nd-date').value = '';
+            closeModal('next-date-modal');
+        };
+
+        document.getElementById('btn-save-game').onclick = async () => {
+            const q = document.getElementById('game-question').value;
+            const a = document.getElementById('game-answer').value;
+            const file = document.getElementById('game-photo').files[0];
+            
+            if(!q || !a || !file) return customAlert("Belum Lengkap", "Isi pertanyaan, jawaban, dan upload fotonya dulu ya!", "error");
+            
+            const btn = document.getElementById('btn-save-game');
+            btn.innerText = "MENYIMPAN..."; btn.disabled = true;
+            
+            const b64 = await compress(file);
+            const target = window.activeRole === 'Andri' ? 'Afifah' : 'Andri';
+            
+            await push(ref(db, 'games'), {
+                sender: window.activeRole,
+                target: target,
+                question: q,
+                answer: a.toLowerCase().trim(),
+                rewardPhoto: b64,
+                isSolved: false,
+                timestamp: Date.now()
+            });
+            
+            btn.innerText = "SIMPAN GAME"; btn.disabled = false;
+            document.getElementById('game-question').value = '';
+            document.getElementById('game-answer').value = '';
+            document.getElementById('game-photo').value = '';
+            closeModal('create-game-modal');
+            customAlert("Berhasil!", `Tebakan berhasil dikirim ke ${target}! Tinggal nunggu dia bisa jawab apa nggak wkwk`, "success");
+        };
+
+        window.openAnswerModal = (id) => {
+            const g = dataGames.find(x => x.id === id);
+            if(!g) return;
+            document.getElementById('ans-game-title').innerText = `Dari: ${g.sender}`;
+            document.getElementById('ans-game-question').innerText = `"${g.question}"`;
+            document.getElementById('ans-game-id').value = id;
+            document.getElementById('ans-game-input').value = '';
+            openModal('answer-game-modal');
+        };
+
+        window.checkGameAnswer = () => {
+            const id = document.getElementById('ans-game-id').value;
+            const ansInput = document.getElementById('ans-game-input').value.toLowerCase().trim();
+            const g = dataGames.find(x => x.id === id);
+            
+            if(!ansInput) return;
+            
+            if (ansInput === g.answer) {
+                update(ref(db, `games/${id}`), {isSolved: true});
+                closeModal('answer-game-modal');
+                customAlert("YAY BENAR! 🎉", "Jawaban kamu pas banget! Selamat menikmati foto rahasianya 😍", "success");
+                setTimeout(() => openLightbox(g.rewardPhoto, 'game_reward', g.timestamp, false), 2000);
+            } else {
+                customAlert("TETOT!", "Jawaban kamu salah! Coba pikir-pikir lagi deh 😝", "error");
+            }
+        };
+
+        window.openLightbox = (url, id, ts, liked) => {
+            activePhoto = {url, id, ts, liked};
+            const lb = document.getElementById('lightbox');
+            if(lb) lb.style.display='flex'; 
+            document.getElementById('lightbox-img').src=url;
+            document.getElementById('lb-date').innerText = new Date(ts).toLocaleDateString('id-ID');
+            
+            const likeBtn = document.getElementById('btn-like-photo');
+            const delBtn = document.getElementById('btn-del-photo');
+
+            if (id === 'chat_img' || id === 'game_reward') {
+                if(likeBtn) likeBtn.style.display = 'none';
+                if(delBtn) delBtn.style.display = 'none';
+            } else {
+                if(likeBtn) { likeBtn.style.display = 'block'; likeBtn.className = `btn-heart ${liked ? 'active' : ''}`; }
+                if(delBtn && window.activeRole !== 'Tamu') { delBtn.style.display = 'block'; }
+            }
+        };
+        window.closeLightbox = () => { const lb = document.getElementById('lightbox'); if(lb) lb.style.display='none'; };
+        
+        window.toggleLike = () => {
+            if(window.activeRole === 'Tamu') return;
+            if(activePhoto.id === 'game_reward' || activePhoto.id === 'chat_img') return; 
+            activePhoto.liked = !activePhoto.liked;
+            update(ref(db, `archive/${currentFolderId}/photos/${activePhoto.id}`), {liked: activePhoto.liked});
+            const likeBtn = document.getElementById('btn-like-photo');
+            if(likeBtn) likeBtn.className = `btn-heart ${activePhoto.liked ? 'active' : ''}`;
+        };
+        document.getElementById('btn-del-photo').onclick = async () => {
+            if(activePhoto.id === 'game_reward' || activePhoto.id === 'chat_img') return; 
+            customConfirm("Hapus Foto?", "Yakin mau hapus foto ini selamanya?", async () => {
+                await remove(ref(db, `archive/${currentFolderId}/photos/${activePhoto.id}`)); 
+                closeLightbox();
+            });
+        };
+        document.getElementById('btn-dl-photo').onclick = () => {
+            const a = document.createElement('a'); a.href = activePhoto.url; a.download = `Memories_${activePhoto.ts}.jpg`; a.target = '_blank'; a.click();
+        };
+
+        window.showRandomMemory = () => {
+            const all = [];
+            dataFolders.forEach(f => { if(f.photos) Object.keys(f.photos).forEach(k => all.push({...f.photos[k], id: k, fId: f.id})); });
+            if(!all.length) return customAlert("Kosong", "Belum ada foto yang bisa di-random nih!", "info");
+            const r = all[Math.floor(Math.random()*all.length)];
+            currentFolderId = r.fId; openLightbox(r.url, r.id, r.timestamp, r.liked);
+        };
+
+        async function compress(file) {
+            return new Promise(res => {
+                const r = new FileReader();
+                r.onload = e => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX = 1080; let w = img.width, h = img.height;
+                        if(w > MAX) { h *= MAX/w; w = MAX; }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        res(canvas.toDataURL('image/jpeg', 0.8));
+                    };
+                    img.src = e.target.result;
+                };
+                r.readAsDataURL(file);
+            });
+        }
+
+        function updateTimer() {
+            try {
+                const loveTimer = document.getElementById('love-timer');
+                if(loveTimer) {
+                    const diff = Date.now() - new Date("2025-11-22T00:00:00").getTime();
+                    const d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+                    loveTimer.innerText = `${d} HARI, ${h} JAM, ${m} MNT, ${s} DTK`;
+                }
+
+                if (nextDateTargetTime) {
+                    const diffND = nextDateTargetTime - Date.now();
+                    const countdownEl = document.getElementById('next-date-countdown');
+                    if (countdownEl) {
+                        if (diffND > 0) {
+                            const ndD = Math.floor(diffND/86400000), ndH = Math.floor((diffND%86400000)/3600000), ndM = Math.floor((diffND%3600000)/60000), ndS = Math.floor((diffND%60000)/1000);
+                            countdownEl.innerText = `${ndD}H ${ndH}J ${ndM}M ${ndS}D lagi! 😍`;
+                        } else {
+                            countdownEl.innerText = "Waktunya Kencan!! 🎉";
+                        }
+                    }
+                }
+            } catch(e) { console.error("Safe timer update:", e); }
+        }
+
+        function createHearts() {
+            setInterval(() => {
+                const h = document.createElement('div'); h.className='heart-bg'; h.innerHTML='🤍';
+                h.style.left = Math.random()*100+'vw'; h.style.animationDuration = (Math.random()*4+3)+'s';
+                document.getElementById('hearts-container').appendChild(h);
+                setTimeout(() => h.remove(), 6000);
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
